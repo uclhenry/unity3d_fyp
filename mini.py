@@ -52,12 +52,24 @@ class prepState():
   def __init__(self):
     self.input_state = tf.placeholder(shape = [210,160,3], dtype = tf.uint8)
     self.output = tf.image.rgb_to_grayscale(self.input_state)
+    //get x and y 
+    //render the neighbour area black
+    
     self.output = tf.image.crop_to_bounding_box(self.output, 50, 0, 160, 160)
     self.output = tf.image.resize_images(self.output,[80,80], method = tf.image.ResizeMethod.NEAREST_NEIGHBOR)
     self.output = tf.squeeze(self.output)
 
   def process(self, sess, state):
     crop = state[75:75+210, 10:10+160, :]
+    x,y=cord_dict["xCord"].eval(), cord_dict["yCord"].eval()
+    for ch in range(3):
+      for x_ in range(-10:10):
+        for y_ in range(-10:10):
+          xMax = 75+210
+          yMax = 10+160
+          if x_+x >0 and x_+x< xMax and y_+y >0 and y_ + y<yMax:
+            state[x_+x,y_+y,ch]=0
+    
     return sess.run(self.output, feed_dict = {self.input_state: crop})
 
 #The Q Network class
