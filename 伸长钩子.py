@@ -2,40 +2,21 @@ import pygame, sys, random
 import math
 from pygame.locals import *
 
-'''
-知识点：
-1.游戏的设计思路
-2.二维速度的求解（三角函数）
-3.两点间的距离
-4.画圆
-图片缩放略讲
-
-
-注意：
-分节代码可测试
-讲解顺序
-1.游戏精灵抽象
-2.准心类
-3.钩子类
-4.黄金矿工类
-'''
 
 #素材
 local_image = 'resources\\images\\'
-
+local_sound = 'resources\\sounds\\'
 
 hook_image = local_image+'hook.png'
 images = [local_image + 'gold1.png', local_image + 'gold2.png', local_image + 'gold3.png']
 background_image = local_image + 'background.png'
-
-local_sound = 'resources\\sounds\\'
 #声音
 background_music = local_sound + 'background.wav'
 score_sound = local_sound + 'score.wav'
 win_sound = local_sound + 'win.wav'
 die_sound = local_sound + 'die.wav'
 
-LIVES = 3
+
 FPS = 30
 MAXRANDTIME = 100
 SCORE_POS = 0, 0
@@ -120,16 +101,14 @@ class Hook():#钩子
 			self.direction.pause = False
 
 	#
-	def set_speed(self):
+	def mine(self):
 		if self.is_carrying == True:
 			if self.carry.size == 0:
 				self.speed = 10
 			elif self.carry.size == 1:
 				self.speed = 6
 			elif self.carry.size == 2:
-				self.speed = 2	
-	def mine(self):
-
+				self.speed = 2
 		if not self.pause:
 			self.direction.pause =True
 			if self.down ==False:
@@ -175,7 +154,6 @@ class Hook():#钩子
 		self.is_carrying = True
 		self.carry = gold
 		self.down= False
-		self.set_speed()
 	def hook_position(self):
 		# 钩子中心点固定
 		if not self.pause:
@@ -199,29 +177,19 @@ class GoldMiner():
 		self.background_image = pygame.transform.scale(self.background_image, (800, 600))
 		self.windowSurface.blit(self.background_image, (0, 0))
 		#生成金块
-		#golds_position
-		self.mines = self.create_golds()
-		#for g in golds_position:
-		#	self.mines.append(Gold(g))
+		golds_position = self.create_golds()
+		self.mines = []
+		for g in golds_position:
+			self.mines.append(Gold(g))
 
-		# 失败次数
-		self.fail_count = 0
-		self.score  = 0
-		self.fail_flag = False
-		self.gold_count = 0
 		self.game_state = GAME_STATE_INIT
-		# 游戏音效
-		self.background_music = pygame.mixer.music.load(background_music)
-		self.score_sound = pygame.mixer.Sound(score_sound)
-		self.win_sound = pygame.mixer.Sound(win_sound)
-		self.die_sound = pygame.mixer.Sound(die_sound)
 
 	#创建金子
 	def create_golds(self):
 		gold_list = []
 		for i in range(GOLD_COUNT):
 			pos = [random.randint(0, 800), random.randint(200, 400)]
-			gold_list.append(Gold(pos))
+			gold_list.append(pos)
 		return gold_list
 
 	#绘制金子
@@ -236,20 +204,10 @@ class GoldMiner():
 		imgText = self.game_font.render(text, True, color)
 		self.windowSurface.blit(imgText, pos)
 
-	# 判断游戏胜利或结束
-	def get_game_state(self):
-		if self.fail_count == FAIL_COUNT:
-			self.game_state = GAME_STATE_OVER
-			self.die_sound.play()
-			pygame.mixer.music.pause()
-		if self.gold_count == WIN_COUNT:
-			self.game_state = GAME_STATE_SUCCESS
-			self.win_sound.play()
 
 
 	def run(self):
-		self.lives = LIVES
-		pygame.mixer.music.play(-1)
+
 		while True:
 			for event in pygame.event.get():
 				if event.type == QUIT:
@@ -269,7 +227,7 @@ class GoldMiner():
 			if self.game_state == GAME_STATE_INIT:
 				self.game_state = GAME_STATE_RUN
 			# 运行时
-			elif self.game_state == GAME_STATE_RUN:
+			elif self.game_state == GAME_STATE_RUN:#new
 				if self.hook.direction.pause == False:
 					self.hook.direction.move()
 				# 开始运行钩子
@@ -282,17 +240,7 @@ class GoldMiner():
 					if self.hook.is_on_gold(i):
 						self.hook.carry_gold(i)
 						self.mines.remove(i)
-						# 加分 1-10 2-20 3-30
-						self.score += (i.size + 1) * 30
-						self.gold_count += 1
-						self.score_sound.play()
-				# 失败次数统计
-				if self.fail_flag and self.hook.down==False and \
-						not self.hook.is_carrying and \
-						not self.hook.pause:
-					self.fail_count += 1
-					self.fail_flag = False
-					self.lives = self.lives -1
+
 
 				if self.hook.is_carrying:
 					self.blit_carry_gold()
@@ -307,12 +255,8 @@ class GoldMiner():
 				# 绘制钩子的线
 				pygame.draw.line(self.windowSurface, (0, 0, 0), (start_x, start_y),
 				                 (int(self.hook.x), int(self.hook.y)))
-				# 绘制文字描述信息
-				# str(FAIL_COUNT - self.fail_count)
-				text = "分数：" + str(self.score) + '   ' + '剩余次数：' +str(self.lives)
-				self.print_text(SCORE_POS, text)
 
-				self.get_game_state()
+
 			# 结束时
 			elif self.game_state == GAME_STATE_OVER:
 				# 绘制文字描述信息
