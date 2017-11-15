@@ -11,7 +11,7 @@ public class DynamicDataSetLoader : MonoBehaviour
     // specify these in Unity Inspector
     public GameObject augmentationObject = null;  // you can use teapot or other object
     public string dataSetName = "";  //  Assets/StreamingAssets/QCAR/DataSetName
-
+    public bool once = false;
     // Use this for initialization
     void Start()
     {
@@ -83,11 +83,22 @@ public class DynamicDataSetLoader : MonoBehaviour
         }
     }
     void Update() {
+        if (once == false) {
+            doOnce();
+            once = true;
+        }
+        
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
         foreach (TrackableBehaviour tb in tbs) {
             Transform board = tb.gameObject.transform.GetChild(0);
             Text _currencyText = board.GetChild(0).gameObject.GetComponent<Text>();
             _currencyText.text = board.name;
+            Text t2 = board.GetChild(1).gameObject.GetComponent<Text>();
+            Text t3 = board.GetChild(2).gameObject.GetComponent<Text>();
+            //find the poi with name = board.name
+            //get the location and other infomation
+
+
         }
 
 
