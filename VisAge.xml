@@ -6,8 +6,8 @@
   <Pois>
     <Poi>
       <Id>Patch00</Id>
-      <Name>00.TorringtonPl</Name>
-	  <ImageTarget>00.TorringtonPl.jpg</ImageTarget>
+      <Name>00TorringtonPl</Name>
+	  <ImageTarget>00TorringtonPl.jpg</ImageTarget>
       <Latitude>51.5227584000008</Latitude>
       <Longitude>-0.131910199999242</Longitude>
       <TargetHeight>1</TargetHeight>
@@ -46,11 +46,11 @@
     </Poi>
     <Poi>
       <Id>Patch02</Id>
-      <Name>02.MaletPl</Name>
+      <Name>02MaletPl</Name>
 	  <ImageTarget>02.MaletPl.jpg</ImageTarget>
       <Latitude>51.5230290000025</Latitude>
       <Longitude>-0.132017100000505</Longitude>
-      <TargetHeight>3</TargetHeight>
+      <TargetHeight>-3</TargetHeight>
       <TargetWidth>4</TargetWidth>
       <SimilarityThreshold>0.7</SimilarityThreshold>
 	  <userId>aitor</userId>
@@ -87,7 +87,7 @@
     </Poi>	
     <Poi>
       <Id>Patch03</Id>
-      <Name>03.MaletPl.bis</Name>
+      <Name>03MaletPlbis</Name>
 	  <ImageTarget>03.MaletPl.bis.jpg</ImageTarget>
       <Latitude>51.523207400002</Latitude>
       <Longitude>-0.1322302</Longitude>
@@ -128,7 +128,7 @@
     </Poi>		
    <Poi>
       <Id>Patch04</Id>
-      <Name>04.DarwinWalk</Name>
+      <Name>04DarwinWalk</Name>
 	  <ImageTarget>04.DarwinWalk.jpg</ImageTarget>
       <Latitude>51.523289100001</Latitude>
       <Longitude>-0.13247320000101</Longitude>
@@ -168,7 +168,7 @@
     </Poi>   
 	<Poi>
       <Id>Patch06</Id>
-      <Name>06.FosterCourt</Name>
+      <Name>06FosterCourt</Name>
 	  <ImageTarget>06.FosterCourt.jpg</ImageTarget>
       <Latitude>51.5235712999985</Latitude>
       <Longitude>-0.132586599996961</Longitude>
@@ -208,7 +208,7 @@
     </Poi>	
 	<Poi>
       <Id>Patch07</Id>
-      <Name>07.Medawar</Name>
+      <Name>07Medawar</Name>
 	  <ImageTarget>07.Medawar.jpg</ImageTarget>
       <Latitude>51.5236881999985</Latitude>
       <Longitude>-0.132175199998477</Longitude>
@@ -248,7 +248,7 @@
     </Poi>	
 	<Poi>
       <Id>Patch08</Id>
-      <Name>08.FacultyOfArts</Name>
+      <Name>08FacultyOfArts</Name>
 	  <ImageTarget>08.FacultyOfArts.jpg</ImageTarget>
       <Latitude>51.523685300001</Latitude>
       <Longitude>-0.132734400001028</Longitude>
@@ -288,7 +288,7 @@
     </Poi>		
 	<Poi>
       <Id>Patch09</Id>
-      <Name>09.InsituteOfPshysiology</Name>
+      <Name>09InsituteOfPhysiology</Name>
 	  <ImageTarget>09.InsituteOfPhysiology.jpg</ImageTarget>
       <Latitude>51.5238574000015</Latitude>
       <Longitude>-0.132993400000505</Longitude>
@@ -328,7 +328,7 @@
     </Poi>	
 	<Poi>
       <Id>Patch10</Id>
-      <Name>10.SouthJunction</Name>
+      <Name>10SouthJunction</Name>
 	  <ImageTarget>10.SouthJunction.jpg</ImageTarget>
       <Latitude>51.5241139000015</Latitude>
       <Longitude>-0.13309199999875</Longitude>
