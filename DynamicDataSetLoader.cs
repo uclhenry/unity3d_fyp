@@ -134,36 +134,46 @@ public class DynamicDataSetLoader : MonoBehaviour
             Debug.LogError("<color=yellow>Failed to load dataset: '" + dataSetName + "'</color>");
         }
     }
+    void RenderText(Transform board, POI p) {
+        Text _currencyText = board.GetChild(0).gameObject.GetComponent<Text>();
+        _currencyText.text = board.name;
+        Debug.Log("point" + p.Name);
+        Text t2 = board.GetChild(1).gameObject.GetComponent<Text>();
+        Text t3 = board.GetChild(2).gameObject.GetComponent<Text>();
+        Text t4 = board.GetChild(3).gameObject.GetComponent<Text>();
+        Text t5 = board.GetChild(4).gameObject.GetComponent<Text>();
+        Text t6 = board.GetChild(5).gameObject.GetComponent<Text>();
+        Text t7 = board.GetChild(6).gameObject.GetComponent<Text>();
+        //find the poi with name = board.name
+        //get the location and other infomation
+        t2.text = "locate at " + p.Latitude + " ," + p.Longitude;
+        t3.text = "id : " + p.Id;
+        t4.text = "user id : " + p.userId;
+        t5.text = "Target Height :" + p.TargetHeight;
+        t6.text = "latitude : " + p.Latitude;
+        t7.text = "longitude :" + p.Longitude;
+    }
     void Update()
     {
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
         foreach (TrackableBehaviour tb in tbs)
         {
+            //board from tb
+            //find the p with same name 
+            // tb.TrackableName == point Name
             Transform board = tb.gameObject.transform.GetChild(0);
-            Text _currencyText = board.GetChild(0).gameObject.GetComponent<Text>();
-            _currencyText.text = board.name;
-            POI p = null;
+            //POI p = null;
             if (Pois != null) {
-                foreach (POI point in Pois)
+                foreach (POI p in Pois)
                 {
-                    if (point.Name == tb.TrackableName)
+                    if (p.Name == tb.TrackableName)
                     {
-                        p = point;
-                        Debug.Log("point" + point.Name);
-                        Text t2 = board.GetChild(1).gameObject.GetComponent<Text>();
-                        Text t3 = board.GetChild(2).gameObject.GetComponent<Text>();
-                        Text t4 = board.GetChild(3).gameObject.GetComponent<Text>();
-                        Text t5 = board.GetChild(4).gameObject.GetComponent<Text>();
-                        Text t6 = board.GetChild(5).gameObject.GetComponent<Text>();
-                        Text t7 = board.GetChild(6).gameObject.GetComponent<Text>();
-                        //find the poi with name = board.name
-                        //get the location and other infomation
-                        t2.text = "locate at " + p.Latitude + " ," + p.Longitude;
-                        t3.text = "id : " + p.Id;
-                        t4.text = "user id : " + p.userId;
-                        t5.text = "Target Height :" + p.TargetHeight;
-                        t6.text = "latitude : " + p.Latitude;
-                        t7.text = "longitude :" + p.Longitude;
+                        if (p.rendered == false) {
+                            RenderText(board, p);
+                            p.rendered = true;
+                        }
+                        
+
                     }          
                 }
             }
