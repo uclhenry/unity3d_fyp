@@ -5,7 +5,7 @@ using Vuforia;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Xml.Linq;
-using EggToolkit;
+
 using System;
 
 public class DynamicDataSetLoader : MonoBehaviour
@@ -18,17 +18,32 @@ public class DynamicDataSetLoader : MonoBehaviour
     public string dataSetName = "";  //  Assets/StreamingAssets/QCAR/DataSetName
     public bool once = false;
     public static List<POI> Pois = null;
+    public List<GameObject> RenderObjects = null;
+    public int i = 0;
+    public GameObject arrow = null;
     // Use this for initialization
     void Start()
     {
-
+        //prepareRenderObjects();
         StartCoroutine(LoadXML());
         // Vuforia 6.2+
         VuforiaARController.Instance.RegisterVuforiaStartedCallback(LoadDataSet);
     }
+    public void prepareRenderObjects() {
+        RenderObjects = new List<GameObject>();
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Capsule));
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+
+    }
     public void readExampleXml()
     {
-        XElement result = XElement.Parse(_result);//任性的地址
+        XElement result = XElement.Parse(_result);//
         //Debug.Log(result.ToString());
         IEnumerable<XElement> elements = from ele in result.Descendants("Pois").Elements("Poi")
                                          select ele;
@@ -39,7 +54,7 @@ public class DynamicDataSetLoader : MonoBehaviour
     {
         Pois = new List<POI>();
 
-        Debug.Log("inside ShowInfoByElements");
+        //Debug.Log("inside ShowInfoByElements");
         foreach (var ele in elements)
         {
             //Debug.Log("a loop");
@@ -107,7 +122,8 @@ public class DynamicDataSetLoader : MonoBehaviour
                     {
                         // instantiate augmentation object and parent to trackable
                         GameObject augmentation = (GameObject)GameObject.Instantiate(augmentationObject);
-                        augmentation.transform.parent = tb.gameObject.transform;
+                        //augmentation.transform.parent = tb.gameObject.transform;
+                        augmentation.transform.SetParent(tb.gameObject.transform);
                         augmentation.transform.localPosition = new Vector3(0f, 0f, 0f);
                         Quaternion target = Quaternion.Euler(90f, 0, 0);
                         augmentation.transform.localRotation = target;// Quaternion.identity;
@@ -116,10 +132,10 @@ public class DynamicDataSetLoader : MonoBehaviour
                         augmentation.gameObject.SetActive(true);
                         augmentation.name = tb.TrackableName;
 
-                        GameObject second = (GameObject)GameObject.Instantiate(secondObject);
-                        second.transform.parent = tb.gameObject.transform;
+                        //GameObject second = (GameObject)GameObject.Instantiate(secondObject);
+                        //second.transform.parent = tb.gameObject.transform;
                         //second.transform.localPosition = new Vector3(0f, 0f, 0f);
-                        second.gameObject.SetActive(true);
+                        //second.gameObject.SetActive(true);
                     }
                     else
                     {
@@ -137,7 +153,7 @@ public class DynamicDataSetLoader : MonoBehaviour
     void RenderText(Transform board, POI p) {
         Text _currencyText = board.GetChild(0).gameObject.GetComponent<Text>();
         _currencyText.text = board.name;
-        Debug.Log("point" + p.Name);
+        //Debug.Log("point" + p.Name);
         Text t2 = board.GetChild(1).gameObject.GetComponent<Text>();
         Text t3 = board.GetChild(2).gameObject.GetComponent<Text>();
         Text t4 = board.GetChild(3).gameObject.GetComponent<Text>();
@@ -164,6 +180,7 @@ public class DynamicDataSetLoader : MonoBehaviour
             Transform board = tb.gameObject.transform.GetChild(0);
             //POI p = null;
             if (Pois != null) {
+                //int i = 0;
                 foreach (POI p in Pois)
                 {
                     if (p.Name == tb.TrackableName)
@@ -172,11 +189,27 @@ public class DynamicDataSetLoader : MonoBehaviour
                             RenderText(board, p);
                             p.rendered = true;
                         }
-                        
+                    }
 
-                    }          
                 }
             }
+            //new code start
+            //if (i < RenderObjects.Count)
+            //{
+            //    GameObject g = RenderObjects[i];
+            //    Debug.Log("add!!!!" + g.ToString());
+            //    if (g.transform.parent == null)
+            //    {
+            //        Debug.Log("Set up BABA");
+            //        g.transform.parent = tb.gameObject.transform;
+            //        g.transform.localPosition = new Vector3(0f, 0f, 0f);
+            //    }
+            //    i++;
+            //}
+            //new code end
+            //GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
+
+
         }
 
 
