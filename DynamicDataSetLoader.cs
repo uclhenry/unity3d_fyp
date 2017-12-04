@@ -23,6 +23,7 @@ public class DynamicDataSetLoader : MonoBehaviour
     public GameObject arrow = null;
     public int renderArrow = 9;
     public List<List<POI>> closet = null;
+    public int pointIndex = 0;
     // Use this for initialization
     void Start()
     {
@@ -219,6 +220,10 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     void Update()
     {
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            pointIndex = (pointIndex + 1) % 8;
+        }
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
         foreach (TrackableBehaviour tb in tbs)
         {
@@ -257,8 +262,10 @@ public class DynamicDataSetLoader : MonoBehaviour
 
 
                         }
-                        POI nb = findNeighbour(p);
-                        if (nb != null) {
+                        
+                        
+                        POI nb = Pois[pointIndex];// findNeighbour(p);
+                        if (nb != null & p!=nb) {
                             Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
                             Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
                             if (tb.gameObject.transform.GetChildCount() == 3)
@@ -275,7 +282,7 @@ public class DynamicDataSetLoader : MonoBehaviour
                                     //due to the range of return value
                                     turn += 180f;
                                 }
-                                turn -= Input.compass.magneticHeading;
+                                turn += Input.compass.magneticHeading;
                                 //arrow.LookAt(new Vector3((float)diffLong, (float)diffLat, 0));
                                 //Debug.Log(-(float)Math.Atan((float)diffLat / (float)diffLong )* 180 / Math.PI);
                                 arrow.Rotate(0f, turn, 0f);
@@ -332,5 +339,12 @@ public class DynamicDataSetLoader : MonoBehaviour
         _result = www.text;
         readExampleXml();
     }
-
+    void OnGUI()
+    {
+        GUIStyle titleStyle = new GUIStyle();
+        titleStyle.fontSize = 40;
+        titleStyle.normal.textColor = new Color(46f / 256f, 163f / 256f, 256f / 256f, 256f / 256f);
+        GUI.Label(new Rect(500, 10, 500, 200), "Point "+pointIndex, titleStyle);
+        //GUI.TextArea(new Rect(100, 0, 100, 100), Input.compass.magneticHeading.ToString());
+    }
 }
