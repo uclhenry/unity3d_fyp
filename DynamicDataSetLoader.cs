@@ -21,9 +21,12 @@ public class DynamicDataSetLoader : MonoBehaviour
     public List<GameObject> RenderObjects = null;
     public int i = 0;
     public GameObject arrow = null;
+    public int renderArrow = 9;
+    public List<List<POI>> closet = null;
     // Use this for initialization
     void Start()
     {
+        Input.compass.enabled = true;
         //prepareRenderObjects();
         StartCoroutine(LoadXML());
         // Vuforia 6.2+
@@ -49,8 +52,8 @@ public class DynamicDataSetLoader : MonoBehaviour
                                          select ele;
         SetUpPois(elements);
         //createAlltext();
-    }
-    public static void SetUpPois(IEnumerable<XElement> elements)
+    }// static
+    public void SetUpPois(IEnumerable<XElement> elements)
     {
         Pois = new List<POI>();
 
@@ -77,9 +80,48 @@ public class DynamicDataSetLoader : MonoBehaviour
             //point.Longitude = Convert.ToDouble(ele.Element("Longitude").Value);
             point.SimilarityThreshold = Convert.ToSingle(ele.Element("SimilarityThreshold").Value);
             Pois.Add(point);
-        }
+        }//k c//k u
+        closet = new List<List<POI>>();
 
+        foreach (var p in Pois)
+        {
+            POI nearest = null;
+            Decimal minDistance = 9999;
+
+            foreach (var nb in Pois)
+            {
+                if (p != nb)
+                {
+                    Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
+                    Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
+                    Decimal currentDis = diffLat * diffLat + diffLong * diffLong;
+                    if (minDistance > currentDis) {
+                        nearest = nb;
+                        minDistance = currentDis;
+                    }
+
+                    //Debug.Log("name:" + nb.Name + "," + p.Name);
+                    //Debug.Log("Long:" + (decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude)).ToString());
+                    //Debug.Log("Lat:" + (decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude)).ToString());
+
+                }
+            }
+            List<POI> pair = new List<POI>();
+            pair.Add(p);
+            pair.Add(nearest);
+            closet.Add(pair);
+        }
+        foreach (var pair in closet)
+        {
+
+            POI nb = pair[1];
+            POI p = pair[0];
+            Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
+            Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
+            Debug.Log(pair[0].Name + "---" + pair[1].Name + "  " + diffLong+ "  " +  diffLat);
+        }
     }
+     
     void LoadDataSet()
     {
 
@@ -128,14 +170,20 @@ public class DynamicDataSetLoader : MonoBehaviour
                         Quaternion target = Quaternion.Euler(90f, 0, 0);
                         augmentation.transform.localRotation = target;// Quaternion.identity;
 
-                        augmentation.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+                        augmentation.transform.localScale = new Vector3(0.002f, 0.002f, 0.002f);
                         augmentation.gameObject.SetActive(true);
                         augmentation.name = tb.TrackableName;
 
-                        //GameObject second = (GameObject)GameObject.Instantiate(secondObject);
-                        //second.transform.parent = tb.gameObject.transform;
-                        //second.transform.localPosition = new Vector3(0f, 0f, 0f);
-                        //second.gameObject.SetActive(true);
+                        GameObject second = (GameObject)GameObject.Instantiate(secondObject);
+                        second.transform.parent = tb.gameObject.transform;
+                        second.transform.localPosition = new Vector3(0f, 0f, 0f);
+                        second.gameObject.SetActive(true);
+                        Quaternion target2 = Quaternion.Euler(90f, 0, 0);
+                        second.transform.localRotation = target2;
+
+                        //
+                        //arrowObject.transform.parent = tb.gameObject.transform;
+
                     }
                     else
                     {
@@ -178,6 +226,21 @@ public class DynamicDataSetLoader : MonoBehaviour
             //find the p with same name 
             // tb.TrackableName == point Name
             Transform board = tb.gameObject.transform.GetChild(0);
+            Transform Marker = tb.gameObject.transform.GetChild(1);
+            TextMesh t = Marker.GetChild(2).gameObject.GetComponent<TextMesh>();
+            if(renderArrow > 0){
+            
+                GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
+                arrowObject.SetActive(true);
+                arrowObject.transform.parent = tb.gameObject.transform;
+                renderArrow--;
+                Quaternion target = Quaternion.Euler(90f, 0, 0);
+                arrowObject.transform.localRotation = target;
+
+
+            }
+            
+            //GetComponent<TextMesh>()
             //POI p = null;
             if (Pois != null) {
                 //int i = 0;
@@ -185,10 +248,42 @@ public class DynamicDataSetLoader : MonoBehaviour
                 {
                     if (p.Name == tb.TrackableName)
                     {
+                        //Debug.Log(p.Name);
+                        //reader a board
                         if (p.rendered == false) {
                             RenderText(board, p);
                             p.rendered = true;
+                            t.text = p.Name;
+
+
                         }
+                        POI nb = findNeighbour(p);
+                        if (nb != null) {
+                            Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
+                            Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
+                            if (tb.gameObject.transform.GetChildCount() == 3)
+                            {
+                                //Debug.Log("arrow");
+                                Transform arrow = tb.gameObject.transform.GetChild(2);
+                                //normal to the screen,point to eyes
+                                Quaternion target = Quaternion.Euler(270f, 0, 0);
+                                arrow.localRotation = target;
+                                //turn to x axies
+                                float turn = 90f;
+                                turn += (float)(180 / Math.PI * Math.Atan((float)diffLat / (float)diffLong));
+                                if (diffLong < 0) {
+                                    //due to the range of return value
+                                    turn += 180f;
+                                }
+                                turn -= Input.compass.magneticHeading;
+                                //arrow.LookAt(new Vector3((float)diffLong, (float)diffLat, 0));
+                                //Debug.Log(-(float)Math.Atan((float)diffLat / (float)diffLong )* 180 / Math.PI);
+                                arrow.Rotate(0f, turn, 0f);
+                                arrow.GetChild(2).GetChild(0).GetComponent<Text>().text = nb.Name;
+                            }
+                        }
+
+
                     }
 
                 }
@@ -207,12 +302,21 @@ public class DynamicDataSetLoader : MonoBehaviour
             //    i++;
             //}
             //new code end
-            //GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
+            
 
 
         }
 
 
+    }
+    public POI findNeighbour(POI p) {
+        POI nb = null;
+        foreach (var pair in closet)
+        {
+            if (pair[0] == p)
+                return pair[1];
+        }
+        return nb;
     }
     IEnumerator LoadXML()
     {
