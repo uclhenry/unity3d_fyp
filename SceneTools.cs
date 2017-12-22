@@ -9,7 +9,23 @@ public static class SceneTools
 {
 	public static string ControlContentContainerName() { return "ContentContainer"; }
     public static string AreaNameDefault() { return "VisAge";}
-    
+    public static string VisAgeXml()
+    {
+        string sPath = "";
+        if (Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            // sPath = "file://" + Application.streamingAssetsPath + "/VisAge/VisAge.xml";
+            sPath = "file://" + Application.persistentDataPath + "//VisAge//VisAge.xml";
+
+        }
+        else if (Application.platform == RuntimePlatform.Android)
+        {
+            //sPath = Application.streamingAssetsPath + "/VisAge/VisAge.xml";
+            sPath = "file://" + Application.persistentDataPath + "//VisAge//VisAge.xml";
+        }
+        return sPath;
+            
+    }
 	public static string AreaZipLastTimeUrl() 	{return "http://visage.cs.ucl.ac.uk/VisAge/GetLastZipTime";}
 	public static string AreaZipLastTimeLocal() { return Path.Combine (Application.persistentDataPath, "LastZip.txt");}
 	public static string AreaZipFileUrl() 	{ return "http://visage.cs.ucl.ac.uk/VisAge/FileServer/VisAge.zip";}
