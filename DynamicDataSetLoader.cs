@@ -223,13 +223,6 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     IEnumerator LoadXML()
     {
-        string sPath = "";
-        if (Application.platform == RuntimePlatform.WindowsEditor) sPath = "file://" + Application.streamingAssetsPath + "/VisAge.xml";
-        else if (Application.platform == RuntimePlatform.Android)
-        {
-            sPath = Application.streamingAssetsPath + "/VisAge.xml";
-        }
-        //sPath = "t";
         WWW www = new WWW(SceneTools.VisAgeXml());
         yield return www;
         _result = www.text;
