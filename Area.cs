@@ -28,7 +28,7 @@ public class Area
 		}
 	}
 	
-	public static Area Load()
+	public static void Load()//Area 
 	{
 		string LastTime="";
 		string LastTimeNew="";
@@ -61,7 +61,7 @@ public class Area
 				{
 					Debug.Log ("Zip file is latest version");
                     Debug.Log("Downloading new zip file");
-                    SceneTools.DownloadFileFromUrlSync(SceneTools.AreaZipFileUrl(), SceneTools.AreaZipFileLocal());
+                    SceneTools.DownloadFileFromUrlSync(SceneTools.testZip, SceneTools.AreaZipFileLocal());//AreaZipFileUrl()
                     new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
                 }
 			}
@@ -69,86 +69,86 @@ public class Area
 			{
                 Debug.Log("Zip not File.Exists (SceneTools.AreaZipLastTimeLocal())");
                 SceneTools.DownloadFileFromUrlSync(SceneTools.AreaZipLastTimeUrl(), SceneTools.AreaZipLastTimeLocal() );
-				SceneTools.DownloadFileFromUrlSync(SceneTools.AreaZipFileUrl(), SceneTools.AreaZipFileLocal());
-				new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);				
+                SceneTools.DownloadFileFromUrlSync(SceneTools.testZip, SceneTools.AreaZipFileLocal());//AreaZipFileUrl()
+                new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);				
 			}
 		}
 
-		var serializer = new XmlSerializer(typeof(Area));
+		//var serializer = new XmlSerializer(typeof(Area));
 
-		using(var stream = new FileStream(Path.Combine(Application.persistentDataPath + "/" + SceneTools.AreaNameDefault(), SceneTools.AreaNameDefault() + ".xml" ), FileMode.Open))
-		{
-			return serializer.Deserialize(stream) as Area;
-		}
+		//using(var stream = new FileStream(Path.Combine(Application.persistentDataPath + "/" + SceneTools.AreaNameDefault(), SceneTools.AreaNameDefault() + ".xml" ), FileMode.Open))
+		//{
+		//	return serializer.Deserialize(stream) as Area;
+		//}
 	}
 	//-------------------------end---XML serializer/deserializer--------------------------------------------//
 	
-	public POI FindPoi(int cosId)
-	{
-		foreach(POI poi in POIs)
-			if (poi.GetCosId() == cosId) 
-				return poi;
+	//public POI FindPoi(int cosId)
+	//{
+	//	foreach(POI poi in POIs)
+	//		if (poi.GetCosId() == cosId) 
+	//			return poi;
 				
-		return null;
-	}
+	//	return null;
+	//}
 }
 
-[XmlRoot("Pois")]
-public class POI
-{
-	public string Id;
-	public string Name;
-	public string ImageTarget;
-	public double Latitude;
-	public double Longitude;
-	public string TargetHeight;
-	public string TargetWidth;
-	public float  SimilarityThreshold;
-	public string userId;
+//[XmlRoot("Pois")]
+//public class POI
+//{
+//	public string Id;
+//	public string Name;
+//	public string ImageTarget;
+//	public double Latitude;
+//	public double Longitude;
+//	public string TargetHeight;
+//	public string TargetWidth;
+//	public float  SimilarityThreshold;
+//	public string userId;
 	
-	[XmlArray("ContentContainers"),XmlArrayItem("ContentContainer")]
-	public ContentContainer[] ContentContainers;
+//	[XmlArray("ContentContainers"),XmlArrayItem("ContentContainer")]
+//	public ContentContainer[] ContentContainers;
 
 
-	//non-serializable properties and attributes
-	GameObject 		  markerObj;
-	public GameObject GetMarkerObj(){return markerObj;}
-	public void 	  SetMarkerObj(GameObject obj){markerObj = obj;}
+//	//non-serializable properties and attributes
+//	GameObject 		  markerObj;
+//	public GameObject GetMarkerObj(){return markerObj;}
+//	public void 	  SetMarkerObj(GameObject obj){markerObj = obj;}
 	
-	GameObject 		  mapObj;
-	public GameObject GetMapObj(){return mapObj;}
-	public void 	  SetMapObj(GameObject obj){mapObj = obj;}
+//	GameObject 		  mapObj;
+//	public GameObject GetMapObj(){return mapObj;}
+//	public void 	  SetMapObj(GameObject obj){mapObj = obj;}
 	
-	int		 		  cosId;
-	public int GetCosId(){return cosId;}
+//	int		 		  cosId;
+//	public int GetCosId(){return cosId;}
 	
-	public GPSlocation GetGPSlocation()
-	{
-		return new GPSlocation(Latitude,Longitude);
-	}
+//	public GPSlocation GetGPSlocation()
+//	{
+//		return new GPSlocation(Latitude,Longitude);
+//	}
 	
 	
-	public void Instantiate(GameObject areaObject, int newCosId)
-	{
-		markerObj = new GameObject();
-		markerObj.transform.parent = areaObject.transform;
-		markerObj.name = "Poi_"+Name;
-		//metaioTracker script = (metaioTracker)markerObj.AddComponent<metaioTracker>();
-		markerObj.tag = "POI";
-		cosId = newCosId;
-		//script.cosID = cosId; //first cosID must be 1
+//	public void Instantiate(GameObject areaObject, int newCosId)
+//	{
+//		markerObj = new GameObject();
+//		markerObj.transform.parent = areaObject.transform;
+//		markerObj.name = "Poi_"+Name;
+//		//metaioTracker script = (metaioTracker)markerObj.AddComponent<metaioTracker>();
+//		markerObj.tag = "POI";
+//		cosId = newCosId;
+//		//script.cosID = cosId; //first cosID must be 1
 
-        //if (Eras.Length > 1) //Do not hide slider when there's only 1 era
-        {
-			//ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
-            //ccs.SetPoi(this);
-        }
+//        //if (Eras.Length > 1) //Do not hide slider when there's only 1 era
+//        {
+//			//ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
+//            //ccs.SetPoi(this);
+//        }
         
-		foreach (ContentContainer cc in ContentContainers)
-			cc.Instantiate (markerObj);
-    }
+//		foreach (ContentContainer cc in ContentContainers)
+//			cc.Instantiate (markerObj);
+//    }
 
-}
+//}
 
 public class ContentContainer
 {

@@ -5,7 +5,7 @@ using Vuforia;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Xml.Linq;
-
+using System.Text.RegularExpressions;
 using System;
 
 public class DynamicDataSetLoader : MonoBehaviour
@@ -21,13 +21,13 @@ public class DynamicDataSetLoader : MonoBehaviour
     public List<GameObject> RenderObjects = null;
     public int i = 0;
     public GameObject arrow = null;
-    public int renderArrow = 9;
-    public List<List<POI>> closet = null;
-    public int pointIndex = 0;
     // Use this for initialization
     void Start()
     {
-        Input.compass.enabled = true;
+        //get xml from server unzip 
+        Area.Load();
+        new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
+
         //prepareRenderObjects();
         StartCoroutine(LoadXML());
         // Vuforia 6.2+
@@ -53,8 +53,8 @@ public class DynamicDataSetLoader : MonoBehaviour
                                          select ele;
         SetUpPois(elements);
         //createAlltext();
-    }// static
-    public void SetUpPois(IEnumerable<XElement> elements)
+    }
+    public static void SetUpPois(IEnumerable<XElement> elements)
     {
         Pois = new List<POI>();
 
@@ -65,12 +65,15 @@ public class DynamicDataSetLoader : MonoBehaviour
             //Debug.Log(ele.Element("Name").Value);
             POI point = new POI();
             point.Name = ele.Element("Name").Value;
+            point.Name = point.Name.Replace(".","");
+            Debug.Log(point.Name.ToString());
+            //point.Name = mod;
             point.Id = ele.Element("Id").Value;
             point.ImageTarget = ele.Element("ImageTarget").Value;
             point.TargetHeight = ele.Element("TargetHeight").Value;
             point.TargetWidth = ele.Element("TargetWidth").Value;
             point.userId = ele.Element("userId").Value;
-            String s = ele.Element("Latitude").Value;
+           String s = ele.Element("Latitude").Value;
 
             s = decimal.Round(decimal.Parse(s), 6).ToString();
             point.Latitude = s;
@@ -81,48 +84,9 @@ public class DynamicDataSetLoader : MonoBehaviour
             //point.Longitude = Convert.ToDouble(ele.Element("Longitude").Value);
             point.SimilarityThreshold = Convert.ToSingle(ele.Element("SimilarityThreshold").Value);
             Pois.Add(point);
-        }//k c//k u
-        closet = new List<List<POI>>();
-
-        foreach (var p in Pois)
-        {
-            POI nearest = null;
-            Decimal minDistance = 9999;
-
-            foreach (var nb in Pois)
-            {
-                if (p != nb)
-                {
-                    Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
-                    Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
-                    Decimal currentDis = diffLat * diffLat + diffLong * diffLong;
-                    if (minDistance > currentDis) {
-                        nearest = nb;
-                        minDistance = currentDis;
-                    }
-
-                    //Debug.Log("name:" + nb.Name + "," + p.Name);
-                    //Debug.Log("Long:" + (decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude)).ToString());
-                    //Debug.Log("Lat:" + (decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude)).ToString());
-
-                }
-            }
-            List<POI> pair = new List<POI>();
-            pair.Add(p);
-            pair.Add(nearest);
-            closet.Add(pair);
         }
-        foreach (var pair in closet)
-        {
 
-            POI nb = pair[1];
-            POI p = pair[0];
-            Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
-            Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
-            Debug.Log(pair[0].Name + "---" + pair[1].Name + "  " + diffLong+ "  " +  diffLat);
-        }
     }
-     
     void LoadDataSet()
     {
 
@@ -171,20 +135,14 @@ public class DynamicDataSetLoader : MonoBehaviour
                         Quaternion target = Quaternion.Euler(90f, 0, 0);
                         augmentation.transform.localRotation = target;// Quaternion.identity;
 
-                        augmentation.transform.localScale = new Vector3(0.002f, 0.002f, 0.002f);
+                        augmentation.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
                         augmentation.gameObject.SetActive(true);
                         augmentation.name = tb.TrackableName;
 
-                        GameObject second = (GameObject)GameObject.Instantiate(secondObject);
-                        second.transform.parent = tb.gameObject.transform;
-                        second.transform.localPosition = new Vector3(0f, 0f, 0f);
-                        second.gameObject.SetActive(true);
-                        Quaternion target2 = Quaternion.Euler(90f, 0, 0);
-                        second.transform.localRotation = target2;
-
-                        //
-                        //arrowObject.transform.parent = tb.gameObject.transform;
-
+                        //GameObject second = (GameObject)GameObject.Instantiate(secondObject);
+                        //second.transform.parent = tb.gameObject.transform;
+                        //second.transform.localPosition = new Vector3(0f, 0f, 0f);
+                        //second.gameObject.SetActive(true);
                     }
                     else
                     {
@@ -220,10 +178,6 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     void Update()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
-            pointIndex = (pointIndex + 1) % 8;
-        }
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
         foreach (TrackableBehaviour tb in tbs)
         {
@@ -231,21 +185,6 @@ public class DynamicDataSetLoader : MonoBehaviour
             //find the p with same name 
             // tb.TrackableName == point Name
             Transform board = tb.gameObject.transform.GetChild(0);
-            Transform Marker = tb.gameObject.transform.GetChild(1);
-            TextMesh t = Marker.GetChild(2).gameObject.GetComponent<TextMesh>();
-            if(renderArrow > 0){
-            
-                GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
-                arrowObject.SetActive(true);
-                arrowObject.transform.parent = tb.gameObject.transform;
-                renderArrow--;
-                Quaternion target = Quaternion.Euler(90f, 0, 0);
-                arrowObject.transform.localRotation = target;
-
-
-            }
-            
-            //GetComponent<TextMesh>()
             //POI p = null;
             if (Pois != null) {
                 //int i = 0;
@@ -253,44 +192,10 @@ public class DynamicDataSetLoader : MonoBehaviour
                 {
                     if (p.Name == tb.TrackableName)
                     {
-                        //Debug.Log(p.Name);
-                        //reader a board
                         if (p.rendered == false) {
                             RenderText(board, p);
                             p.rendered = true;
-                            t.text = p.Name;
-
-
                         }
-                        
-                        
-                        POI nb = Pois[pointIndex];// findNeighbour(p);
-                        if (nb != null & p!=nb) {
-                            Decimal diffLong = decimal.Parse(nb.Longitude) - decimal.Parse(p.Longitude);
-                            Decimal diffLat = decimal.Parse(nb.Latitude) - decimal.Parse(p.Latitude);
-                            if (tb.gameObject.transform.GetChildCount() == 3)
-                            {
-                                //Debug.Log("arrow");
-                                Transform arrow = tb.gameObject.transform.GetChild(2);
-                                //normal to the screen,point to eyes
-                                Quaternion target = Quaternion.Euler(270f, 0, 0);
-                                arrow.localRotation = target;
-                                //turn to x axies
-                                float turn = 90f;
-                                turn += (float)(180 / Math.PI * Math.Atan((float)diffLat / (float)diffLong));
-                                if (diffLong < 0) {
-                                    //due to the range of return value
-                                    turn += 180f;
-                                }
-                                turn += Input.compass.magneticHeading;
-                                //arrow.LookAt(new Vector3((float)diffLong, (float)diffLat, 0));
-                                //Debug.Log(-(float)Math.Atan((float)diffLat / (float)diffLong )* 180 / Math.PI);
-                                arrow.Rotate(0f, turn, 0f);
-                                arrow.GetChild(2).GetChild(0).GetComponent<Text>().text = nb.Name;
-                            }
-                        }
-
-
                     }
 
                 }
@@ -309,21 +214,12 @@ public class DynamicDataSetLoader : MonoBehaviour
             //    i++;
             //}
             //new code end
-            
+            //GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
 
 
         }
 
 
-    }
-    public POI findNeighbour(POI p) {
-        POI nb = null;
-        foreach (var pair in closet)
-        {
-            if (pair[0] == p)
-                return pair[1];
-        }
-        return nb;
     }
     IEnumerator LoadXML()
     {
@@ -334,17 +230,27 @@ public class DynamicDataSetLoader : MonoBehaviour
             sPath = Application.streamingAssetsPath + "/VisAge.xml";
         }
         //sPath = "t";
-        WWW www = new WWW(sPath);
+        WWW www = new WWW(SceneTools.VisAgeXml());
         yield return www;
         _result = www.text;
         readExampleXml();
+
+        //new 
+
     }
-    void OnGUI()
-    {
-        GUIStyle titleStyle = new GUIStyle();
-        titleStyle.fontSize = 40;
-        titleStyle.normal.textColor = new Color(46f / 256f, 163f / 256f, 256f / 256f, 256f / 256f);
-        GUI.Label(new Rect(500, 10, 500, 200), "Point "+pointIndex, titleStyle);
-        //GUI.TextArea(new Rect(100, 0, 100, 100), Input.compass.magneticHeading.ToString());
-    }
+
+}
+public class POI
+{
+    public string Id;
+    public string Name;
+    public string ImageTarget;
+    public string Latitude;
+    public string Longitude;
+    public string TargetHeight;
+    public string TargetWidth;
+    public float SimilarityThreshold;
+    public string userId;
+    public bool rendered = false;
+
 }

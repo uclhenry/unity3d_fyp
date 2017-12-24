@@ -36,8 +36,9 @@ public static class SceneTools
 	//			return "http://visage.cs.ucl.ac.uk/VisAgeDev/FileServer/VisAge.zip";
 	//										}
 	public static string AreaZipFileLocal() { return Path.Combine (Application.persistentDataPath, "VisAge.zip");}
-	
-	public static bool IsNewSceneDesign()
+    public static string testZip = "http://www0.cs.ucl.ac.uk/staff/A.RoviraPerez/VisAge/VisAge.zip";
+
+    public static bool IsNewSceneDesign()
 	{
 		if (Application.loadedLevelName == "ExperimentNavigation" || Application.loadedLevelName == "VisAge") return true;
 		
