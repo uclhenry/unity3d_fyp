@@ -73,7 +73,7 @@ public class DynamicDataSetLoader : MonoBehaviour
             point.TargetHeight = ele.Element("TargetHeight").Value;
             point.TargetWidth = ele.Element("TargetWidth").Value;
             point.userId = ele.Element("userId").Value;
-           String s = ele.Element("Latitude").Value;
+            String s = ele.Element("Latitude").Value;
 
             s = decimal.Round(decimal.Parse(s), 6).ToString();
             point.Latitude = s;
@@ -158,23 +158,23 @@ public class DynamicDataSetLoader : MonoBehaviour
         }
     }
     void RenderText(Transform board, POI p) {
-        Text _currencyText = board.GetChild(0).gameObject.GetComponent<Text>();
-        _currencyText.text = board.name;
+        Text Name = board.GetChild(0).gameObject.GetComponent<Text>();
+        Name.text = p.Name;// board.name;
         //Debug.Log("point" + p.Name);
-        Text t2 = board.GetChild(1).gameObject.GetComponent<Text>();
-        Text t3 = board.GetChild(2).gameObject.GetComponent<Text>();
-        Text t4 = board.GetChild(3).gameObject.GetComponent<Text>();
-        Text t5 = board.GetChild(4).gameObject.GetComponent<Text>();
-        Text t6 = board.GetChild(5).gameObject.GetComponent<Text>();
-        Text t7 = board.GetChild(6).gameObject.GetComponent<Text>();
+        Text location = board.GetChild(1).gameObject.GetComponent<Text>();
+        Text Id = board.GetChild(2).gameObject.GetComponent<Text>();
+        Text UserId = board.GetChild(3).gameObject.GetComponent<Text>();
+        Text TargetHeight = board.GetChild(4).gameObject.GetComponent<Text>();
+        Text Latitude = board.GetChild(5).gameObject.GetComponent<Text>();
+        Text Longitude = board.GetChild(6).gameObject.GetComponent<Text>();
         //find the poi with name = board.name
         //get the location and other infomation
-        t2.text = "locate at " + p.Latitude + " ," + p.Longitude;
-        t3.text = "id : " + p.Id;
-        t4.text = "user id : " + p.userId;
-        t5.text = "Target Height :" + p.TargetHeight;
-        t6.text = "latitude : " + p.Latitude;
-        t7.text = "longitude :" + p.Longitude;
+        location.text = "locate at " + p.Latitude + " ," + p.Longitude;
+        Id.text = "id : " + p.Id;
+        UserId.text = "user id : " + p.userId;
+        TargetHeight.text = "Target Height :" + p.TargetHeight;
+        Latitude.text = "latitude : " + p.Latitude;
+        Longitude.text = "longitude :" + p.Longitude;
     }
     void Update()
     {
@@ -190,10 +190,11 @@ public class DynamicDataSetLoader : MonoBehaviour
                 //int i = 0;
                 foreach (POI p in Pois)
                 {
-                    if (p.Name == tb.TrackableName)
+                    if (p.Id == tb.TrackableName)
                     {
                         if (p.rendered == false) {
                             RenderText(board, p);
+
                             p.rendered = true;
                         }
                     }
@@ -223,6 +224,13 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     IEnumerator LoadXML()
     {
+        string sPath = "";
+        if (Application.platform == RuntimePlatform.WindowsEditor) sPath = "file://" + Application.streamingAssetsPath + "/VisAge.xml";
+        else if (Application.platform == RuntimePlatform.Android)
+        {
+            sPath = Application.streamingAssetsPath + "/VisAge.xml";
+        }
+        //sPath = "t";
         WWW www = new WWW(SceneTools.VisAgeXml());
         yield return www;
         _result = www.text;
