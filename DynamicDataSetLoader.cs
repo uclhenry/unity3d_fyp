@@ -40,7 +40,6 @@ public class DynamicDataSetLoader : MonoBehaviour
         RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Capsule));
         RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
-
         RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
 
@@ -48,11 +47,11 @@ public class DynamicDataSetLoader : MonoBehaviour
     public void readExampleXml()
     {
         XElement result = XElement.Parse(_result);//
-        //Debug.Log(result.ToString());
+      
         IEnumerable<XElement> elements = from ele in result.Descendants("Pois").Elements("Poi")
                                          select ele;
         SetUpPois(elements);
-        //createAlltext();
+       
     }
     public static void SetUpPois(IEnumerable<XElement> elements)
     {
@@ -74,12 +73,12 @@ public class DynamicDataSetLoader : MonoBehaviour
             point.TargetWidth = ele.Element("TargetWidth").Value;
             point.userId = ele.Element("userId").Value;
             String s = ele.Element("Latitude").Value;
-
-            s = decimal.Round(decimal.Parse(s), 6).ToString();
-            point.Latitude = s;
+            decimal d = 0;
+            d = decimal.Round(decimal.Parse(s), 6);//.ToString();
+            point.Latitude = (double)d;
             s = ele.Element("Longitude").Value;
-            s = decimal.Round(decimal.Parse(s), 6).ToString();
-            point.Longitude = s;
+            d = decimal.Round(decimal.Parse(s), 6);//.ToString();
+            point.Longitude = (double)d;
             //point.Latitude = Convert.ToDouble(ele.Element("Latitude").Value);
             //point.Longitude = Convert.ToDouble(ele.Element("Longitude").Value);
             point.SimilarityThreshold = Convert.ToSingle(ele.Element("SimilarityThreshold").Value);
@@ -224,34 +223,28 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     IEnumerator LoadXML()
     {
-        string sPath = "";
-        if (Application.platform == RuntimePlatform.WindowsEditor) sPath = "file://" + Application.streamingAssetsPath + "/VisAge.xml";
-        else if (Application.platform == RuntimePlatform.Android)
-        {
-            sPath = Application.streamingAssetsPath + "/VisAge.xml";
-        }
-        //sPath = "t";
+
         WWW www = new WWW(SceneTools.VisAgeXml());
         yield return www;
         _result = www.text;
         readExampleXml();
-
-        //new 
 
     }
 
 }
 public class POI
 {
+
+    public bool rendered = false;
+
     public string Id;
     public string Name;
     public string ImageTarget;
-    public string Latitude;
-    public string Longitude;
+    public double Latitude;
+    public double Longitude;
     public string TargetHeight;
     public string TargetWidth;
     public float SimilarityThreshold;
     public string userId;
-    public bool rendered = false;
 
 }
