@@ -20,8 +20,9 @@ public static class SceneTools
         }
         else if (Application.platform == RuntimePlatform.Android)
         {
-            //sPath = Application.streamingAssetsPath + "/VisAge/VisAge.xml";
-            sPath = "file://" + Application.persistentDataPath + "//VisAge//VisAge.xml";
+            //sPath = Application.streamingAssetsPath + "/VisAge/VisAge.xml";  
+            sPath = "file://" + Application.persistentDataPath + "//VisAge//VisAge.xml";//for www
+
         }
         return sPath;
             
