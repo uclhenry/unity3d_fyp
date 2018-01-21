@@ -21,17 +21,53 @@ public class DynamicDataSetLoader : MonoBehaviour
     public List<GameObject> RenderObjects = null;
     public int i = 0;
     public GameObject arrow = null;
+    public Area area;
     // Use this for initialization
     void Start()
     {
         //get xml from server unzip 
-        Area.Load();
+         area = Area.Load();
+        
         new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
+        CreateTrackerPois();
 
         //prepareRenderObjects();
         StartCoroutine(LoadXML());
         // Vuforia 6.2+
         VuforiaARController.Instance.RegisterVuforiaStartedCallback(LoadDataSet);
+        //GameObject test = GameObject.Find("Poi_Bentham");
+        //String vuforiaTargetName = 
+        //Transform poi = GameObject.Find("1:DynamicImageTarget-Patch00").transform;
+        //test.transform.parent = poi;
+        linkToVuforiaTarget();
+    }
+    void CreateTrackerPois()
+    {
+        GameObject areaObject = new GameObject();
+        areaObject.name = "[Trackers]";
+        int i = 0;
+        foreach (POI poi in area.POIs)
+        {
+            poi.Instantiate(areaObject, ++i);
+
+            Debug.Log(poi.Id);
+
+        }
+    }
+    void linkToVuforiaTarget() {
+        foreach (POI p in area.POIs)
+        {
+            
+
+            Debug.Log(p.Id);
+            String vuforiaTarget = "DynamicImageTarget-" + p.Id;
+            vuforiaTarget = "DynamicImageTarget-Patch00"; 
+            Transform poi = GameObject.Find(vuforiaTarget).transform;
+
+            Transform display = GameObject.Find("Poi_"+p.Name).transform;
+            display.parent = poi;
+
+        }
     }
     public void prepareRenderObjects() {
         RenderObjects = new List<GameObject>();
@@ -58,6 +94,7 @@ public class DynamicDataSetLoader : MonoBehaviour
         Pois = new List<POI>();
 
         //Debug.Log("inside ShowInfoByElements");
+        
         foreach (var ele in elements)
         {
             //Debug.Log("a loop");
@@ -71,7 +108,7 @@ public class DynamicDataSetLoader : MonoBehaviour
             point.ImageTarget = ele.Element("ImageTarget").Value;
             point.TargetHeight = ele.Element("TargetHeight").Value;
             point.TargetWidth = ele.Element("TargetWidth").Value;
-            point.userId = ele.Element("userId").Value;
+            //point.userId = ele.Element("userId").Value;
             String s = ele.Element("Latitude").Value;
             decimal d = 0;
             d = decimal.Round(decimal.Parse(s), 6);//.ToString();
@@ -118,7 +155,7 @@ public class DynamicDataSetLoader : MonoBehaviour
                 {
 
                     // change generic name to include trackable name
-                    tb.gameObject.name = ++counter + ":DynamicImageTarget-" + tb.TrackableName;
+                    tb.gameObject.name ="DynamicImageTarget-" + tb.TrackableName; ++counter;
 
                     // add additional script components for trackable
                     tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
@@ -185,9 +222,9 @@ public class DynamicDataSetLoader : MonoBehaviour
             // tb.TrackableName == point Name
             Transform board = tb.gameObject.transform.GetChild(0);
             //POI p = null;
-            if (Pois != null) {
+            if (area.POIs != null) {
                 //int i = 0;
-                foreach (POI p in Pois)
+                foreach (POI p in area.POIs)
                 {
                     if (p.Id == tb.TrackableName)
                     {
@@ -232,19 +269,19 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
 
 }
-public class POI
-{
+//public class POI
+//{
 
-    public bool rendered = false;
+//    public bool rendered = false;
 
-    public string Id;
-    public string Name;
-    public string ImageTarget;
-    public double Latitude;
-    public double Longitude;
-    public string TargetHeight;
-    public string TargetWidth;
-    public float SimilarityThreshold;
-    public string userId;
+//    public string Id;
+//    public string Name;
+//    public string ImageTarget;
+//    public double Latitude;
+//    public double Longitude;
+//    public string TargetHeight;
+//    public string TargetWidth;
+//    public float SimilarityThreshold;
+//    public string userId;
 
-}
+//}

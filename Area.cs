@@ -28,7 +28,7 @@ public class Area
 		}
 	}
 	
-	public static void Load()//Area 
+	public static Area Load()//Area 
 	{
 		string LastTime="";
 		string LastTimeNew="";
@@ -60,95 +60,95 @@ public class Area
 				else 
 				{
 					Debug.Log ("Zip file is latest version");
-                    Debug.Log("Downloading new zip file");
-                    SceneTools.DownloadFileFromUrlSync(SceneTools.testZip, SceneTools.AreaZipFileLocal());//AreaZipFileUrl()
-                    new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
                 }
 			}
 			else
 			{
                 Debug.Log("Zip not File.Exists (SceneTools.AreaZipLastTimeLocal())");
                 SceneTools.DownloadFileFromUrlSync(SceneTools.AreaZipLastTimeUrl(), SceneTools.AreaZipLastTimeLocal() );
-                SceneTools.DownloadFileFromUrlSync(SceneTools.testZip, SceneTools.AreaZipFileLocal());//AreaZipFileUrl()
+                SceneTools.DownloadFileFromUrlSync(SceneTools.AreaZipFileUrl(), SceneTools.AreaZipFileLocal());//AreaZipFileUrl()
                 new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);				
 			}
 		}
 
-		//var serializer = new XmlSerializer(typeof(Area));
+        var serializer = new XmlSerializer(typeof(Area));
 
-		//using(var stream = new FileStream(Path.Combine(Application.persistentDataPath + "/" + SceneTools.AreaNameDefault(), SceneTools.AreaNameDefault() + ".xml" ), FileMode.Open))
-		//{
-		//	return serializer.Deserialize(stream) as Area;
-		//}
-	}
-	//-------------------------end---XML serializer/deserializer--------------------------------------------//
-	
-	//public POI FindPoi(int cosId)
-	//{
-	//	foreach(POI poi in POIs)
-	//		if (poi.GetCosId() == cosId) 
-	//			return poi;
-				
-	//	return null;
-	//}
+        using (var stream = new FileStream(Path.Combine(Application.persistentDataPath + "/" + SceneTools.AreaNameDefault(), SceneTools.AreaNameDefault() + ".xml"), FileMode.Open))
+        {
+            return serializer.Deserialize(stream) as Area;
+        }
+    }
+    //-------------------------end---XML serializer/deserializer--------------------------------------------//
+
+    //public POI findpoi(int cosid)
+    //{
+    //    foreach (POI poi in POI)
+    //        if (poi.getcosid() == cosid)
+    //            return poi;
+
+    //    return null;
+    //}
 }
 
-//[XmlRoot("Pois")]
-//public class POI
-//{
-//	public string Id;
-//	public string Name;
-//	public string ImageTarget;
-//	public double Latitude;
-//	public double Longitude;
-//	public string TargetHeight;
-//	public string TargetWidth;
-//	public float  SimilarityThreshold;
-//	public string userId;
-	
-//	[XmlArray("ContentContainers"),XmlArrayItem("ContentContainer")]
-//	public ContentContainer[] ContentContainers;
+[XmlRoot("Pois")]
+public class POI
+{
+    public bool rendered = false;
 
 
-//	//non-serializable properties and attributes
-//	GameObject 		  markerObj;
-//	public GameObject GetMarkerObj(){return markerObj;}
-//	public void 	  SetMarkerObj(GameObject obj){markerObj = obj;}
-	
-//	GameObject 		  mapObj;
-//	public GameObject GetMapObj(){return mapObj;}
-//	public void 	  SetMapObj(GameObject obj){mapObj = obj;}
-	
-//	int		 		  cosId;
-//	public int GetCosId(){return cosId;}
-	
-//	public GPSlocation GetGPSlocation()
-//	{
-//		return new GPSlocation(Latitude,Longitude);
-//	}
-	
-	
-//	public void Instantiate(GameObject areaObject, int newCosId)
-//	{
-//		markerObj = new GameObject();
-//		markerObj.transform.parent = areaObject.transform;
-//		markerObj.name = "Poi_"+Name;
-//		//metaioTracker script = (metaioTracker)markerObj.AddComponent<metaioTracker>();
-//		markerObj.tag = "POI";
-//		cosId = newCosId;
-//		//script.cosID = cosId; //first cosID must be 1
+    public string Id;
+    public string Name;
+    public string ImageTarget;
+    public double Latitude;
+    public double Longitude;
+    public string TargetHeight;
+    public string TargetWidth;
+    public float SimilarityThreshold;
+    public string userId;
 
-//        //if (Eras.Length > 1) //Do not hide slider when there's only 1 era
-//        {
-//			//ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
-//            //ccs.SetPoi(this);
-//        }
-        
-//		foreach (ContentContainer cc in ContentContainers)
-//			cc.Instantiate (markerObj);
-//    }
+    [XmlArray("ContentContainers"), XmlArrayItem("ContentContainer")]
+    public ContentContainer[] ContentContainers;
 
-//}
+
+    //non-serializable properties and attributes
+    GameObject markerObj;
+    public GameObject GetMarkerObj() { return markerObj; }
+    public void SetMarkerObj(GameObject obj) { markerObj = obj; }
+
+    GameObject mapObj;
+    public GameObject GetMapObj() { return mapObj; }
+    public void SetMapObj(GameObject obj) { mapObj = obj; }
+
+    int cosId;
+    public int GetCosId() { return cosId; }
+
+    public GPSlocation GetGPSlocation()
+    {
+        return new GPSlocation(Latitude, Longitude);
+    }
+
+
+    public void Instantiate(GameObject areaObject, int newCosId)
+    {
+        markerObj = new GameObject();
+        markerObj.transform.parent = areaObject.transform;
+        markerObj.name = "Poi_" + Name;
+        //metaioTracker script = (metaioTracker)markerObj.AddComponent<metaioTracker>();
+       // markerObj.tag = "POI";
+        cosId = newCosId;
+        //script.cosID = cosId; //first cosID must be 1
+
+        //if (Eras.Length > 1) //Do not hide slider when there's only 1 era
+        {
+            ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
+            ccs.SetPoi(this);
+        }
+
+        foreach (ContentContainer cc in ContentContainers)
+            cc.Instantiate(markerObj);
+    }
+
+}
 
 public class ContentContainer
 {
@@ -186,34 +186,45 @@ public class Content
 	public void Instantiate(GameObject contentContainer)
 	{
         GameObject content;
-
-        switch(Type)
+        Debug.LogWarning("contentContainer instantiate ");
+        switch (Type)
 		{
 		case PoiDataType.texture2D:
+                
+
 			content 					= (GameObject) GameObject.CreatePrimitive(PrimitiveType.Plane);
 			content.transform.parent 	= contentContainer.transform;
 			content.name 				= content.transform.parent.name + "_tex2D";
 			//add content to touchinput layer to manipulate it with a touch screen
 			//if the layer is set is that it seems to be rendered on the CameraMap... and that's a problem
-			content.layer 				= LayerMask.NameToLayer("VisAgeContent");//SceneTools.ContentLayerMaskName());
+			//content.layer 				= LayerMask.NameToLayer("VisAgeContent");//SceneTools.ContentLayerMaskName());
 			
 			content.transform.position 	= Position.getVector3();
 			content.transform.rotation 	= /*Rotation.getQuaternion() +*/ Quaternion.Euler(0f, 180f, 0f);
 			//content.transform.localScale= Scale.getVector3();
 			content.transform.localScale = new Vector3(100,100,100);
-			
-			string p = Path.Combine(Application.persistentDataPath,SceneTools.AreaNameDefault()+"/"+Description);
+			content.transform.parent.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                string p = Path.Combine(Application.persistentDataPath,SceneTools.AreaNameDefault()+"/"+Description);
+                Debug.Log(p);
 			if(System.IO.File.Exists(p))
 			{
 				Texture2D texture = new Texture2D(512,512);
 				texture.LoadImage(System.IO.File.ReadAllBytes(p));
-				content.GetComponent<Renderer>().material.mainTexture = texture;
-				content.GetComponent<Renderer>().material.shader = Shader.Find("metaio/UnlitTexture");
-			}
+                    //TextureScaler tool = new TextureScaler();
+                    //TextureScaler.scale(texture, 1, 1);
+
+                content.GetComponent<Renderer>().material.mainTexture = texture;
+                    //content.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+
+
+                    //content.GetComponent<Renderer>().material.shader = Shader.Find("metaio/UnlitTexture");
+                }
 			else
 			{
 				Debug.LogWarning("Texture " + p + " does not exist");
 			}
+
+            Debug.Log("A picture from" + content.name);
 			break;
 			
 		case PoiDataType.object3D:
@@ -225,7 +236,7 @@ public class Content
             //Model3D model3D 			= GameObject.Find("Object3DManager").GetComponent<Model3D>();
 			//GameObject[] models 		= model3D.Load(Path.Combine(Application.persistentDataPath, SceneTools.AreaNameDefault() + "/"+Description));
 
-
+            Debug.Log("A object3D from" + content.name);
 			break;
 		
         case PoiDataType.audio:
@@ -246,7 +257,8 @@ public class Content
             clip = www.GetAudioClip(false,false,AudioType.MPEG);
             clip.name = Description;            
             asource.clip = clip;
-			break;
+            Debug.Log("A audio from" + content.name);
+            break;
 		
         case PoiDataType.text:
 			content = new GameObject();
