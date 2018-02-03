@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-
 [XmlRoot("Area")]
 public class Area
 {
@@ -145,7 +144,7 @@ public class POI
         }
 
         foreach (ContentContainer cc in ContentContainers)
-            cc.Instantiate(markerObj);
+            cc.Instantiate_link(markerObj);
     }
 
 }
@@ -159,7 +158,7 @@ public class ContentContainer
 	[XmlArray("Contents"),XmlArrayItem("Content")]
 	public Content[] Contents;
 
-	public void Instantiate(GameObject poi)
+	public void Instantiate_link(GameObject poi)
 	{
 		GameObject ContCont = new GameObject ();
 		ContCont.transform.parent = poi.transform;
@@ -168,9 +167,14 @@ public class ContentContainer
 		if(Contents != null) //arp, skip the empty content containers
 		foreach (Content c in Contents) 
 		{
-			c.Instantiate (ContCont);
+			c.LinkTo(ContCont);
 		}
-	}
+        Transform prefab = GameObject.Find("Canvas").transform;
+        GameObject ob = GameObject.Instantiate<GameObject>(prefab.gameObject, new Vector3(0, 0, 0), Quaternion.identity);
+        ob.transform.parent = ContCont.transform;
+        ob.name = ContCont.name;
+
+    }
 
 }
 
@@ -183,7 +187,7 @@ public class Content
 	public RotationVector 	Rotation;
 	public ScaleVector    	Scale;
 
-	public void Instantiate(GameObject contentContainer)
+	public void LinkTo(GameObject contentContainer)
 	{
         GameObject content;
         Debug.LogWarning("contentContainer instantiate ");
@@ -240,28 +244,36 @@ public class Content
 			break;
 		
         case PoiDataType.audio:
-			content = new GameObject();
-			content.transform.parent 	= contentContainer.transform;
-			content.name 				= content.transform.parent.name + "_audio";
-			//content.layer 				= LayerMask.NameToLayer(SceneTools.ContentLayerMaskName());
-			
-			content.transform.position 	= Position.getVector3();
-			//content.transform.rotation = /*Rotation.getQuaternion();*/ Quaternion.Euler(0f, 180f, 0f);
-			//content.transform.localScale = Scale.getVector3();
-			//content.AddComponent<ControlAudio>();
-
-            AudioSource asource = content.AddComponent<AudioSource>();
-            asource.playOnAwake = false;
-			WWW www = new WWW("file://" + Path.Combine(Application.persistentDataPath, SceneTools.AreaNameDefault() + "/"+Description));
-            AudioClip clip = www.GetAudioClip();
-            clip = www.GetAudioClip(false,false,AudioType.MPEG);
-            clip.name = Description;            
-            asource.clip = clip;
-            Debug.Log("A audio from" + content.name);
+            
+            if (Description.Contains("mp3"))
+            {
+                
+                Debug.Log("A audio called" + Description);
+                GameObject prefeb_Container =(GameObject) Resources.Load("AudioContainer", typeof(GameObject));
+                content = GameObject.Instantiate<GameObject>(prefeb_Container, new Vector3(0, 0, 0), Quaternion.identity);
+                content.transform.parent = contentContainer.transform;
+                content.name = content.transform.parent.name + "_audio";
+                    //content.layer 				= LayerMask.NameToLayer(SceneTools.ContentLayerMaskName());
+                Test   t = (content.GetComponent("Test") as Test);
+                   
+                 t.sendAudioName(Description);
+                content.transform.position = Position.getVector3();
+                //content.transform.rotation = /*Rotation.getQuaternion();*/ Quaternion.Euler(0f, 180f, 0f);
+                //content.transform.localScale = Scale.getVector3();
+                //content.AddComponent<ControlAudio>();
+                //content.GetComponent<ControlAudio>().enabled = true;
+                //AudioSource asource = content.AddComponent<AudioSource>();
+                //asource.playOnAwake = false;
+                
+                //asource.clip = clip;
+                Debug.Log("A audio from" + content.name);
+            }
             break;
 		
         case PoiDataType.text:
-			content = new GameObject();
+                Transform prefab = GameObject.Find("content_text").transform;
+                content = GameObject.Instantiate<GameObject>(prefab.gameObject,new Vector3(0,0,0), Quaternion.identity);
+              //  content = new GameObject();
 			content.transform.parent 	= contentContainer.transform;
 			content.name 				= content.transform.parent.name + "_text";
 			//content.layer 				= LayerMask.NameToLayer(SceneTools.ContentLayerMaskName());
@@ -269,8 +281,9 @@ public class Content
 			//content.transform.position = Position.getVector3();
 			//content.transform.rotation = /*Rotation.getQuaternion();*/ Quaternion.Euler(0f, 180f, 0f);
 			content.transform.localScale = Scale.getVector3();
-			content.AddComponent<GUIText>();
-			content.GetComponent<GUIText>().text = Description;
+                //content.AddComponent<GUIText>();
+                //content.GetComponent<GUIText>().text = Description;
+                content.GetComponent<TextMesh>().text = Description;
             break;
 
 		default:
