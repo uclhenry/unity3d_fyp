@@ -24,20 +24,21 @@ public class Test : MonoBehaviour {
     void Start()
     {
         if (this.transform.parent != null) { 
-        Debug.Log(this.transform.parent.name);
-        AudioCanvas = this.transform.parent.GetChild(this.transform.parent.childCount - 1 ).gameObject;
-        newButton = Instantiate(buttonPrefeb) as GameObject;
-        newButton.transform.SetParent(AudioCanvas.transform, false);
-        music = (GetComponent("MusicPlayer") as MusicPlayer);//获取播放器对象
-        if (getName) { 
-            music.Setup(AudioName);
-            setUp = true;
-        }
-        Button btn = newButton.GetComponent<Button>();
-        //newButton.transform.position = new Vector3(0, 0, 0);
-        Debug.Log(newButton.GetComponent<RectTransform>().localPosition);
-        newButton.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
-        btn.onClick.AddListener(TaskOnClick);
+            Debug.Log(this.transform.parent.name);
+            AudioCanvas = this.transform.parent.GetChild(this.transform.parent.childCount - 1 ).gameObject;
+            newButton = Instantiate(buttonPrefeb) as GameObject;
+            newButton.transform.SetParent(AudioCanvas.transform, false);
+            music = (GetComponent("MusicPlayer") as MusicPlayer);//获取播放器对象
+            if (getName) { 
+                music.Setup(AudioName);
+                setUp = true;
+            }
+            Button btn = newButton.GetComponent<Button>();
+            //newButton.transform.position = new Vector3(0, 0, 0);
+            Debug.Log(newButton.GetComponent<RectTransform>().localPosition);
+            newButton.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            btn.onClick.AddListener(TaskOnClick);
+            newButton.GetComponentInChildren<Text>().text = this.transform.parent.name + " Play >";
         }
     }
      void Update()
@@ -51,28 +52,28 @@ public class Test : MonoBehaviour {
     }
     void TaskOnClick()
     {
-        
-            Debug.Log("AudioName  " + AudioName);
-        Debug.Log("Play"+music.Sound.clip.name);
-        Debug.Log("isPlaying" + music.Sound.isPlaying+music.Sound.isActiveAndEnabled);
-        GameObject musicOb = GameObject.Find("file:" + AudioName);
-       musicOb.GetComponent<AudioSource>().Play();
-        Debug.Log("musicOb" + musicOb.GetComponent<AudioSource>().clip.name + musicOb.GetComponent<AudioSource>().isActiveAndEnabled);
 
-        //if (music.Sound.isPlaying == false)
-        //{
-        //    music.Play();
-        //    if (music.state == playing)
-        //        newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Pause";
+        // Debug.Log("AudioName  " + AudioName);
+        // Debug.Log("Play"+music.Sound.clip.name);
+        // Debug.Log("isPlaying" + music.Sound.isPlaying+music.Sound.isActiveAndEnabled);
+        // GameObject musicOb = GameObject.Find("file:" + AudioName);
+        //musicOb.GetComponent<AudioSource>().Play();
+        // Debug.Log("musicOb" + musicOb.GetComponent<AudioSource>().clip.name + musicOb.GetComponent<AudioSource>().isActiveAndEnabled);
+        //music.Play();
+        if (music.Sound.isPlaying == false)
+        {
+            music.Play();
+            if (music.state == playing)
+                newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = this.transform.parent.name + "- Pause";
 
-        //}
+        }
 
-        //else
-        //{
-        //    music.PauseAudio();
-        //    if (music.state == pause)
-        //        newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = "Play";
-        //}
+        else
+        {
+            music.PauseAudio();
+            if (music.state == pause)
+                newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = this.transform.parent.name + "- Play";
+        }
     }
 
     //void OnGUI()
