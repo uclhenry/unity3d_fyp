@@ -286,6 +286,19 @@ public class DynamicDataSetLoader : MonoBehaviour
     //    readExampleXml();
 
     //}
+    void unlinkScene() {
+        foreach (POI poi in area.POIs)
+            foreach (ContentContainer container in poi.ContentContainers) {
+                //container is a scene
+                container.GetSceneGameObject().transform.parent = null;
+            }
+    }
+    void linkScene() {
+        foreach (POI poi in area.POIs) {
+            if (poi.ContentContainers.Length - 1 >= SceneIndex)
+                poi.ContentContainers[SceneIndex].GetSceneGameObject().transform.parent = poi.GetMarkerObj().transform;
+        }
+    }
     void OnGUI() {
         NextSceneButton();
     }
@@ -295,6 +308,8 @@ public class DynamicDataSetLoader : MonoBehaviour
             SceneIndex += 1;
             int numberScene = 2;//GameObject.Find("Poi_" + kvp.Key).transform.childCount;
             SceneIndex = SceneIndex % numberScene;
+            unlinkScene();
+            linkScene();
             //Debug.Log(SceneIndex);
             //for(i = 0;i< GameObject.Find("Poi_Bentham").transform.childCount; i++)
             //{
