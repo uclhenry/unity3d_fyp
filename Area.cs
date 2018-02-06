@@ -31,8 +31,9 @@ public class Area
 	{
 		string LastTime="";
 		string LastTimeNew="";
-
-		if(Application.loadedLevelName == "ExperimentNavigation")
+        if(1==2)
+        {
+            if (Application.loadedLevelName == "ExperimentNavigation")
 		{
 			if(!File.Exists(SceneTools.AreaZipFileLocal()))
 			{
@@ -69,6 +70,7 @@ public class Area
                 new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);				
 			}
 		}
+        }
 
         var serializer = new XmlSerializer(typeof(Area));
 
@@ -139,8 +141,8 @@ public class POI
 
         //if (Eras.Length > 1) //Do not hide slider when there's only 1 era
         {
-            ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
-            ccs.SetPoi(this);
+            //ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
+            //ccs.SetPoi(this);
         }
 
         foreach (ContentContainer cc in ContentContainers)

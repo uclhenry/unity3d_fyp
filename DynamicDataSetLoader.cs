@@ -22,11 +22,13 @@ public class DynamicDataSetLoader : MonoBehaviour
     public int i = 0;
     public GameObject arrow = null;
     public Area area;
+    public Dictionary<String, int> SceneToRendered = new Dictionary<String, int>();
+    public int SceneIndex = 0;
     // Use this for initialization
     void Start()
     {
         //get xml from server unzip 
-         area = Area.Load();
+        area = Area.Load();
         
         new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
         CreateTrackerPois();
@@ -41,6 +43,13 @@ public class DynamicDataSetLoader : MonoBehaviour
         //test.transform.parent = poi;
         linkToVuforiaTarget();
     }
+    void SetSceneIndex(int i) {
+        SceneIndex = i;
+    }
+    int GetSceneIndex()
+    {
+        return SceneIndex;
+    }
     void CreateTrackerPois()
     {
         GameObject areaObject = new GameObject();
@@ -49,21 +58,23 @@ public class DynamicDataSetLoader : MonoBehaviour
         foreach (POI poi in area.POIs)
         {
             poi.Instantiate(areaObject, ++i);
-
+            SceneToRendered.Add(poi.Name, 0);
             Debug.Log(poi.Id);
-
         }
+        foreach (var p in SceneToRendered) {
+            Debug.Log(p);
+        }
+    }
+    void GoNextScene(string name) {
+        SceneToRendered[name] += 1; 
     }
     void linkToVuforiaTarget() {
         foreach (POI p in area.POIs)
-        {
-            
-
+        {         
             Debug.Log(p.Id);
             String vuforiaTarget = "DynamicImageTarget-" + p.Id;
             vuforiaTarget = "DynamicImageTarget-Patch00"; 
             Transform poi = GameObject.Find(vuforiaTarget).transform;
-
             Transform display = GameObject.Find("Poi_"+p.Name).transform;
             display.parent = poi;
 
@@ -258,6 +269,16 @@ public class DynamicDataSetLoader : MonoBehaviour
 
 
     }
+    void NextScene() {
+        foreach (KeyValuePair<string, int> kvp in SceneToRendered) {
+            int tmp = SceneToRendered[kvp.Key];
+            int numberScene = GameObject.Find("Poi_" + kvp.Key).transform.childCount;
+            tmp = (tmp + 1) % numberScene;
+
+
+
+        }
+    }
     IEnumerator LoadXML()
     {
 
@@ -267,21 +288,33 @@ public class DynamicDataSetLoader : MonoBehaviour
         readExampleXml();
 
     }
+    void OnGUI() {
+        if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene")) {
+            SceneIndex += 1;
+            int numberScene = 2;//GameObject.Find("Poi_" + kvp.Key).transform.childCount;
+            SceneIndex = SceneIndex % numberScene;
+            //Debug.Log(SceneIndex);
+            //for(i = 0;i< GameObject.Find("Poi_Bentham").transform.childCount; i++)
+            //{
+            //    if(i!=SceneIndex)
+            //    GameObject.Find("Poi_Bentham").transform.GetChild(i).gameObject.SetActive(false);
+            //}
+
+        }
+    }
+    //void OnGUI() {
+
+    //    String AudioName = "a2b3b90144e44071b42c0f371beffcb8.mp3";
+    //GameObject musicOb = GameObject.Find("file:" + AudioName);
+
+    //    if (GUI.Button(new Rect(10, 10, 100, 50), "PLAY"))
+    //    {
+    //        Debug.Log("Playing! " + musicOb.GetComponent<AudioSource>().isPlaying);
+
+    //        Debug.Log("Play! "+ musicOb.GetComponent<AudioSource>().name);
+    //        musicOb.GetComponent<AudioSource>().Play();
+
+    //    }
+    //}
 
 }
-//public class POI
-//{
-
-//    public bool rendered = false;
-
-//    public string Id;
-//    public string Name;
-//    public string ImageTarget;
-//    public double Latitude;
-//    public double Longitude;
-//    public string TargetHeight;
-//    public string TargetWidth;
-//    public float SimilarityThreshold;
-//    public string userId;
-
-//}
