@@ -34,7 +34,7 @@ public class DynamicDataSetLoader : MonoBehaviour
         CreateTrackerPois();
 
         //prepareRenderObjects();
-        StartCoroutine(LoadXML());
+        //StartCoroutine(LoadXML());
         // Vuforia 6.2+
         VuforiaARController.Instance.RegisterVuforiaStartedCallback(LoadDataSet);
         //GameObject test = GameObject.Find("Poi_Bentham");
@@ -80,60 +80,58 @@ public class DynamicDataSetLoader : MonoBehaviour
 
         }
     }
-    public void prepareRenderObjects() {
-        RenderObjects = new List<GameObject>();
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Capsule));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
-        RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+    //public void prepareRenderObjects() {
+    //    RenderObjects = new List<GameObject>();
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Capsule));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
+    //    RenderObjects.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
 
-    }
-    public void readExampleXml()
-    {
-        XElement result = XElement.Parse(_result);//
+    //}
+    //public void readExampleXml()
+    //{
+    //    XElement result = XElement.Parse(_result);//
       
-        IEnumerable<XElement> elements = from ele in result.Descendants("Pois").Elements("Poi")
-                                         select ele;
-        SetUpPois(elements);
+    //    IEnumerable<XElement> elements = from ele in result.Descendants("Pois").Elements("Poi")
+    //                                     select ele;
+    //    SetUpPois(elements);
        
-    }
-    public static void SetUpPois(IEnumerable<XElement> elements)
-    {
-        Pois = new List<POI>();
+    //}
+    //public static void SetUpPois(IEnumerable<XElement> elements)
+    //{
+    //    Pois = new List<POI>();
 
-        //Debug.Log("inside ShowInfoByElements");
+    //    //Debug.Log("inside ShowInfoByElements");
         
-        foreach (var ele in elements)
-        {
-            //Debug.Log("a loop");
-            //Debug.Log(ele.Element("Name").Value);
-            POI point = new POI();
-            point.Name = ele.Element("Name").Value;
-            point.Name = point.Name.Replace(".","");
-            Debug.Log(point.Name.ToString());
-            //point.Name = mod;
-            point.Id = ele.Element("Id").Value;
-            point.ImageTarget = ele.Element("ImageTarget").Value;
-            point.TargetHeight = ele.Element("TargetHeight").Value;
-            point.TargetWidth = ele.Element("TargetWidth").Value;
-            //point.userId = ele.Element("userId").Value;
-            String s = ele.Element("Latitude").Value;
-            decimal d = 0;
-            d = decimal.Round(decimal.Parse(s), 6);//.ToString();
-            point.Latitude = (double)d;
-            s = ele.Element("Longitude").Value;
-            d = decimal.Round(decimal.Parse(s), 6);//.ToString();
-            point.Longitude = (double)d;
-            //point.Latitude = Convert.ToDouble(ele.Element("Latitude").Value);
-            //point.Longitude = Convert.ToDouble(ele.Element("Longitude").Value);
-            point.SimilarityThreshold = Convert.ToSingle(ele.Element("SimilarityThreshold").Value);
-            Pois.Add(point);
-        }
+    //    foreach (var ele in elements)
+    //    {
+    //        //Debug.Log("a loop");
+    //        //Debug.Log(ele.Element("Name").Value);
+    //        POI point = new POI();
+    //        point.Name = ele.Element("Name").Value;
+    //        point.Name = point.Name.Replace(".","");
+    //        Debug.Log(point.Name.ToString());
+    //        //point.Name = mod;
+    //        point.Id = ele.Element("Id").Value;
+    //        point.ImageTarget = ele.Element("ImageTarget").Value;
+    //        point.TargetHeight = ele.Element("TargetHeight").Value;
+    //        point.TargetWidth = ele.Element("TargetWidth").Value;
+    //        //point.userId = ele.Element("userId").Value;
+    //        String s = ele.Element("Latitude").Value;
+    //        decimal d = 0;
+    //        d = decimal.Round(decimal.Parse(s), 6);//.ToString();
+    //        point.Latitude = (double)d;
+    //        s = ele.Element("Longitude").Value;
+    //        d = decimal.Round(decimal.Parse(s), 6);//.ToString();
+    //        point.Longitude = (double)d;
+    //        point.SimilarityThreshold = Convert.ToSingle(ele.Element("SimilarityThreshold").Value);
+    //        Pois.Add(point);
+    //    }
 
-    }
+    //}
     void LoadDataSet()
     {
 
@@ -279,17 +277,21 @@ public class DynamicDataSetLoader : MonoBehaviour
 
         }
     }
-    IEnumerator LoadXML()
-    {
+    //IEnumerator LoadXML()
+    //{
 
-        WWW www = new WWW(SceneTools.VisAgeXml());
-        yield return www;
-        _result = www.text;
-        readExampleXml();
+    //    WWW www = new WWW(SceneTools.VisAgeXml());
+    //    yield return www;
+    //    _result = www.text;
+    //    readExampleXml();
 
-    }
+    //}
     void OnGUI() {
-        if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene")) {
+        NextSceneButton();
+    }
+    void NextSceneButton() {
+        if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
+        {
             SceneIndex += 1;
             int numberScene = 2;//GameObject.Find("Poi_" + kvp.Key).transform.childCount;
             SceneIndex = SceneIndex % numberScene;
