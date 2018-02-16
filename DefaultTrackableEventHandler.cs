@@ -58,8 +58,11 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
         {
             Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
-            OnTrackingFound();
+            
             ButtonOn = true;
+           
+            linkScene();
+            OnTrackingFound();
         }
         else if (previousStatus == TrackableBehaviour.Status.TRACKED &&
                  newStatus == TrackableBehaviour.Status.NOT_FOUND)
@@ -67,6 +70,8 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
             OnTrackingLost();
             ButtonOn = false;
+            unlinkScene();
+           
         }
         else
         {
@@ -75,6 +80,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             // Call OnTrackingLost() to hide the augmentations
             OnTrackingLost();
             ButtonOn = false;
+            unlinkScene();
         }
     }
 
@@ -145,7 +151,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     #endregion // PRIVATE_METHODS
     void unlinkScene()
     {
-       
+            if(scenelist!=null)
             foreach (GameObject container in scenelist)
             {
             //container is a scene
@@ -166,13 +172,16 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     }
     void NextSceneButton()
     {
+
         if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
         {
             currentSceneIndex += 1;
             
             currentSceneIndex = currentSceneIndex % scenelist.Count;
+            OnTrackingLost();
             unlinkScene();
             linkScene();
+            OnTrackingFound();
 
         }
     }
