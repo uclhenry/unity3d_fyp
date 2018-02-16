@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Test : MonoBehaviour {
-    private MusicPlayer music;
+    public MusicPlayer music;
     //spublic Button yourButton;
     public GameObject AudioCanvas = null;
     public GameObject buttonPrefeb;
@@ -16,10 +16,11 @@ public class Test : MonoBehaviour {
     int playing = 1;
     int pause = 2;
     int stop = 3;
-    
-    public void sendAudioName(String description) {
+    private GameObject audioObject;
+    public void sendAudioName(String description,GameObject parent) {
         AudioName = description;
         getName = true;
+        audioObject = parent;
     }
     void Start()
     {
@@ -30,7 +31,7 @@ public class Test : MonoBehaviour {
             newButton.transform.SetParent(AudioCanvas.transform, false);
             music = (GetComponent("MusicPlayer") as MusicPlayer);//获取播放器对象
             if (getName) { 
-                music.Setup(AudioName);
+                music.Setup(AudioName, audioObject);
                 setUp = true;
             }
             Button btn = newButton.GetComponent<Button>();
@@ -45,7 +46,7 @@ public class Test : MonoBehaviour {
     {
         if (getName && !setUp)
         {
-            music.Setup(AudioName);
+            music.Setup(AudioName, audioObject);
             setUp = true; 
 
         }
@@ -60,11 +61,12 @@ public class Test : MonoBehaviour {
         //musicOb.GetComponent<AudioSource>().Play();
         // Debug.Log("musicOb" + musicOb.GetComponent<AudioSource>().clip.name + musicOb.GetComponent<AudioSource>().isActiveAndEnabled);
         //music.Play();
+        Text textOnbutton = newButton.transform.GetChild(0).gameObject.GetComponent<Text>();
         if (music.Sound.isPlaying == false)
         {
             music.Play();
             if (music.state == playing)
-                newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = this.transform.parent.name + "- Pause";
+                textOnbutton.text = this.transform.parent.name + "- ||";
 
         }
 
@@ -72,7 +74,7 @@ public class Test : MonoBehaviour {
         {
             music.PauseAudio();
             if (music.state == pause)
-                newButton.transform.GetChild(0).gameObject.GetComponent<Text>().text = this.transform.parent.name + "- Play";
+                textOnbutton.text = this.transform.parent.name + "- |>";
         }
     }
 

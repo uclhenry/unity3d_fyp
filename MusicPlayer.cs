@@ -12,33 +12,31 @@ public class MusicPlayer : MonoBehaviour
     int pause = 2;
     int stop = 3;
     public int state = 3;
-    
-    public void Setup(string Description) {
-
-        StartCoroutine(wwwDownload(Description));
-        //clone prefeb
-        //WWW www = new WWW("file://" + Path.Combine(Application.persistentDataPath, SceneTools.AreaNameDefault() + "//" + Description));
+    public GameObject file;
+    void Start()
+    {
+        GameObject prefeb_Sound = GameObject.Find("Audio Source");
+        file = GameObject.Instantiate<GameObject>(prefeb_Sound, new Vector3(0, 0, 0), Quaternion.identity);
         
-       // Sound.clip = clip;// (AudioClip)Resources.Load(str, typeof(AudioClip));//调用Resources方法加载AudioClip资源
+    }
+    public void Setup(string Description,GameObject ob) {
+        StartCoroutine(wwwDownload(Description));
+        file.transform.parent = ob.transform;
     }
     System.Collections.IEnumerator wwwDownload(string Description) {
         WWW www = new WWW("file://" + Path.Combine(Application.persistentDataPath, SceneTools.AreaNameDefault() + "//" + Description));
         yield return www;
 
 
-
-
         AudioClip clip = www.GetAudioClip();
         //clip = www.GetAudioClip(false,false,AudioType.MPEG);
         clip = www.GetAudioClip(false, false, AudioType.MPEG);
         clip.name = Description;
-        GameObject prefeb_Sound = GameObject.Find("Audio Source");
-        //GameObject prefeb_Sound = (GameObject)Resources.Load("Audio Source", typeof(GameObject));
-        GameObject ob = GameObject.Instantiate<GameObject>(prefeb_Sound, new Vector3(0, 0, 0), Quaternion.identity);
-        ob.name = "file:" + Description;
-        //Sound = Instantiate(Sound);
-        ob.GetComponent<AudioSource>().clip = clip;
-        Sound = ob.GetComponent<AudioSource>();
+       
+        file.name = "url:" + Description;
+        file.GetComponent<AudioSource>().clip = clip;
+        Sound = file.GetComponent<AudioSource>();
+        //file = ob;
     }
     public void Play()
     {
