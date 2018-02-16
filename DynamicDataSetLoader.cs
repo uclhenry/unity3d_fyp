@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 using Vuforia;
@@ -29,8 +29,8 @@ public class DynamicDataSetLoader : MonoBehaviour
     {
         //get xml from server unzip 
         area = Area.Load();
-        
-        new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
+
+        //new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
         CreateTrackerPois();
 
         //prepareRenderObjects();
@@ -42,6 +42,7 @@ public class DynamicDataSetLoader : MonoBehaviour
         //Transform poi = GameObject.Find("1:DynamicImageTarget-Patch00").transform;
         //test.transform.parent = poi;
         linkToVuforiaTarget();
+        
     }
     void SetSceneIndex(int i) {
         SceneIndex = i;
@@ -66,18 +67,48 @@ public class DynamicDataSetLoader : MonoBehaviour
         }
     }
     void GoNextScene(string name) {
-        SceneToRendered[name] += 1; 
+        SceneToRendered[name] += 1;
     }
     void linkToVuforiaTarget() {
         foreach (POI p in area.POIs)
-        {         
-            Debug.Log(p.Id);
+        {
+            //Debug.Log(p.Id);
             String vuforiaTarget = "DynamicImageTarget-" + p.Id;
-            vuforiaTarget = "DynamicImageTarget-Patch00"; 
+            vuforiaTarget = "DynamicImageTarget-Patch00";
             Transform poi = GameObject.Find(vuforiaTarget).transform;
-            Transform display = GameObject.Find("Poi_"+p.Name).transform;
+            Transform display = GameObject.Find("Poi_" + p.Name).transform;
             display.parent = poi;
 
+            //DefaultTrackableEventHandler handler = poi.GetComponent<DefaultTrackableEventHandler>();
+            //if (handler != null)
+            //    foreach (ContentContainer scene in p.ContentContainers)
+            //        handler.scenelist.Add(scene.GetSceneGameObject());
+
+        }
+    }
+    void addScene2handler(){
+        Debug.Log("========= add to handler ===========");
+        foreach (POI p in area.POIs) {
+            Debug.Log("========= p ===========");
+            String vuforiaTarget = "DynamicImageTarget-" + p.Id;
+            vuforiaTarget = "DynamicImageTarget-Patch00";
+            ;
+            GameObject poi = GameObject.Find(vuforiaTarget);
+            if (poi == null)
+            {
+                Debug.Log("========= null ===========");
+                continue;
+
+            }
+            DefaultTrackableEventHandler handler = poi.transform.GetComponent<DefaultTrackableEventHandler>();
+            handler.PoiGameObject = poi;
+            if (handler != null)
+                foreach (ContentContainer scene in p.ContentContainers)
+                {
+                    handler.scenelist.Add(scene.GetSceneGameObject());Debug.Log("adding");
+
+                }
+                    
         }
     }
     //public void prepareRenderObjects() {
@@ -223,6 +254,11 @@ public class DynamicDataSetLoader : MonoBehaviour
     }
     void Update()
     {
+        if (once == false)
+        {
+            addScene2handler();
+            once = true;
+        }
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
         foreach (TrackableBehaviour tb in tbs)
         {
@@ -300,7 +336,7 @@ public class DynamicDataSetLoader : MonoBehaviour
         }
     }
     void OnGUI() {
-        NextSceneButton();
+        //NextSceneButton();
     }
     void NextSceneButton() {
         if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
@@ -319,19 +355,6 @@ public class DynamicDataSetLoader : MonoBehaviour
 
         }
     }
-    //void OnGUI() {
 
-    //    String AudioName = "a2b3b90144e44071b42c0f371beffcb8.mp3";
-    //GameObject musicOb = GameObject.Find("file:" + AudioName);
-
-    //    if (GUI.Button(new Rect(10, 10, 100, 50), "PLAY"))
-    //    {
-    //        Debug.Log("Playing! " + musicOb.GetComponent<AudioSource>().isPlaying);
-
-    //        Debug.Log("Play! "+ musicOb.GetComponent<AudioSource>().name);
-    //        musicOb.GetComponent<AudioSource>().Play();
-
-    //    }
-    //}
 
 }
