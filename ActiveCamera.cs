@@ -22,6 +22,8 @@ public class ActiveCamera : MonoBehaviour
         guiYScale = (Screen.orientation == ScreenOrientation.Landscape ? Screen.height : Screen.width) / 640.0f;
         // setup the gui area
         guiRect = new Rect(4.0f * guiXScale, 64.0f * guiXScale, Screen.width / guiXScale - 32.0f * guiXScale, 32.0f * guiYScale);
+        //Transform hiddenScenes = GameObject.Find("HiddenObject").transform;
+        //GameObject.Find("[Map]").transform.parent = hiddenScenes;
 
     }
 
@@ -65,20 +67,25 @@ public class ActiveCamera : MonoBehaviour
     }
     void ClickButtonToChangeView() {
         Transform hiddenScenes = GameObject.Find("HiddenObject").transform;
+        Transform map = GameObject.Find("[Map]").transform;
         if (GUI.Button(new Rect(0,2f/8* Screen.height,0.2f*Screen.width,0.1f*Screen.height), "toggle View")) {
             bool previousState = ARCamera.GetComponent<Camera>().enabled;
             if (previousState == false)
             {
                 ARCamera.GetComponent<Camera>().enabled = true;
                 MapCamera.GetComponent<Camera>().enabled = false;
- 
-                GameObject.Find("[Map]").transform.parent = hiddenScenes;
+
+                //map.parent = hiddenScenes;
+                map.GetComponent<MapSwitch>().on = false;
             }
             else if (previousState == true) {
                 ARCamera.GetComponent<Camera>().enabled = false;
                 MapCamera.GetComponent<Camera>().enabled = true;
 
-                GameObject.Find("[Map]").transform.parent = null;
+                //map.parent = null;
+                map.GetComponent<MapSwitch>().on = true;
+
+
             }
         }
     }
