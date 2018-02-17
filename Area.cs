@@ -96,7 +96,6 @@ public class POI
 {
     public bool rendered = false;
 
-
     public string Id;
     public string Name;
     public string ImageTarget;
@@ -144,9 +143,9 @@ public class POI
             //ControlContentContainers ccs = markerObj.AddComponent<ControlContentContainers>();
             //ccs.SetPoi(this);
         }
-
+        int index = 0;
         foreach (ContentContainer cc in ContentContainers)
-            cc.Instantiate_link(markerObj);
+            cc.Instantiate_link(markerObj,index++);
     }
 
 }
@@ -156,15 +155,20 @@ public class ContentContainer
 	public string Id;
 	public string Name;
 	public string Description;
-
+    //this is a scene
 	[XmlArray("Contents"),XmlArrayItem("Content")]
 	public Content[] Contents;
+    GameObject SceneGameObject;
+    public GameObject GetSceneGameObject() { return SceneGameObject; }
+    public void SetSceneGameObject(GameObject obj) { SceneGameObject = obj; }
 
-	public void Instantiate_link(GameObject poi)
+    public void Instantiate_link(GameObject poi,int index)
 	{
 		GameObject ContCont = new GameObject ();
-		ContCont.transform.parent = poi.transform;
-		ContCont.name = Name;
+        SceneGameObject = ContCont;
+
+        ContCont.transform.parent = poi.transform;
+		ContCont.name = index.ToString()+"_"+poi.name+"_"+Name;
 
 		if(Contents != null) //arp, skip the empty content containers
 		foreach (Content c in Contents) 
@@ -256,9 +260,10 @@ public class Content
                 content.transform.parent = contentContainer.transform;
                 content.name = content.transform.parent.name + "_audio";
                     //content.layer 				= LayerMask.NameToLayer(SceneTools.ContentLayerMaskName());
-                Test   t = (content.GetComponent("Test") as Test);
-                   
-                 t.sendAudioName(Description);
+                Test   t = (content.GetComponent("Test") as Test);                  
+                 t.sendAudioName(Description,content);
+ 
+                    
                 content.transform.position = Position.getVector3();
                 //content.transform.rotation = /*Rotation.getQuaternion();*/ Quaternion.Euler(0f, 180f, 0f);
                 //content.transform.localScale = Scale.getVector3();

@@ -42,10 +42,10 @@ public class ActiveCamera : MonoBehaviour
 
     void OnGUI()
     {
-        ChangeAngle1();
+        ChangeCamera();
         ClickButtonToChangeView();
     }
-    void ChangeAngle1()
+    void ChangeCamera()
     {
         if (Input.GetKey(KeyCode.Alpha1))
         {
@@ -64,7 +64,7 @@ public class ActiveCamera : MonoBehaviour
         GUILayout.Button(showStr);  
     }
     void ClickButtonToChangeView() {
-
+        Transform hiddenScenes = GameObject.Find("HiddenObject").transform;
         if (GUI.Button(new Rect(0,2f/8* Screen.height,0.2f*Screen.width,0.1f*Screen.height), "toggle View")) {
             bool previousState = ARCamera.GetComponent<Camera>().enabled;
             if (previousState == false)
@@ -72,13 +72,13 @@ public class ActiveCamera : MonoBehaviour
                 ARCamera.GetComponent<Camera>().enabled = true;
                 MapCamera.GetComponent<Camera>().enabled = false;
  
-                GameObject.Find("[Map]").transform.localPosition = new Vector3(100, 0, 0);
+                GameObject.Find("[Map]").transform.parent = hiddenScenes;
             }
             else if (previousState == true) {
                 ARCamera.GetComponent<Camera>().enabled = false;
                 MapCamera.GetComponent<Camera>().enabled = true;
-                
-                GameObject.Find("[Map]").transform.localPosition = new Vector3(0, 0, 0);
+
+                GameObject.Find("[Map]").transform.parent = null;
             }
         }
     }
@@ -86,7 +86,7 @@ public class ActiveCamera : MonoBehaviour
     void SetFalse()
     {
         ARCamera.GetComponent<Camera>().enabled = false;
-        //ARCamera.SetActive(false);
+      
         MapCamera.GetComponent<Camera>().enabled = false;
         
     }

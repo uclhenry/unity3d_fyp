@@ -70,7 +70,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
             OnTrackingLost();
             ButtonOn = false;
-            unlinkScene();
+            HideScenes();
            
         }
         else
@@ -80,7 +80,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             // Call OnTrackingLost() to hide the augmentations
             OnTrackingLost();
             ButtonOn = false;
-            unlinkScene();
+            HideScenes();
         }
     }
 
@@ -90,7 +90,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
 
     protected virtual void OnTrackingFound()
     {
-        GameObject.Find("[Map]").transform.localPosition = new Vector3(10000, 0, 0);
+        GameObject.Find("[Map]").transform.position = new Vector3(10000, 0, 0);
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
@@ -131,6 +131,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
 
     protected virtual void OnTrackingLost()
     {
+        GameObject.Find("[Map]").transform.position = new Vector3(10000, 0, 0);
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
@@ -155,7 +156,18 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             foreach (GameObject container in scenelist)
             {
             //container is a scene
-            container.transform.parent = null;
+            //container.transform.parent = null;
+            }
+    }
+    void HideScenes()
+    {
+        Transform hiddenScenes = GameObject.Find("HiddenObject").transform;
+
+        if (scenelist != null)
+            foreach (GameObject container in scenelist)
+            {
+                //container is a scene
+                container.transform.SetParent(hiddenScenes);
             }
     }
     void linkScene()
@@ -167,21 +179,25 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     }
     void OnGUI()
     {
-        if(ButtonOn)
-        NextSceneButton();
+        if (ButtonOn) {
+            GameObject.Find("[Map]").transform.position = new Vector3(10000, 0, 0);NextSceneButton();
+        }
+        
     }
     void NextSceneButton()
     {
-
         if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
         {
+            
+
             currentSceneIndex += 1;
             
             currentSceneIndex = currentSceneIndex % scenelist.Count;
             OnTrackingLost();
-            unlinkScene();
+            HideScenes();
             linkScene();
             OnTrackingFound();
+            GameObject.Find("[Map]").transform.position = new Vector3(10000, 0, 0);
 
         }
     }

@@ -27,7 +27,7 @@ public class DynamicDataSetLoader : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //get xml from server unzip 
+        //convert xml into class
         area = Area.Load();
 
         //new ZipIt(SceneTools.AreaZipFileLocal(), "", Application.persistentDataPath);
@@ -77,12 +77,16 @@ public class DynamicDataSetLoader : MonoBehaviour
             vuforiaTarget = "DynamicImageTarget-Patch00";
             Transform poi = GameObject.Find(vuforiaTarget).transform;
             Transform display = GameObject.Find("Poi_" + p.Name).transform;
-            display.parent = poi;
-
-            //DefaultTrackableEventHandler handler = poi.GetComponent<DefaultTrackableEventHandler>();
-            //if (handler != null)
-            //    foreach (ContentContainer scene in p.ContentContainers)
-            //        handler.scenelist.Add(scene.GetSceneGameObject());
+            display.SetParent(poi);
+        }
+    }
+    void HideScenes() {
+        Transform hiddenScenes = GameObject.Find("HiddenObject").transform;
+        foreach (POI p in area.POIs) {
+            foreach (ContentContainer container in p.ContentContainers)
+            {
+                container.GetSceneGameObject().transform.SetParent(hiddenScenes);
+            }
 
         }
     }
@@ -107,7 +111,9 @@ public class DynamicDataSetLoader : MonoBehaviour
                 {
                     handler.scenelist.Add(scene.GetSceneGameObject());Debug.Log("adding");
 
+
                 }
+            break;
                     
         }
     }
@@ -257,6 +263,8 @@ public class DynamicDataSetLoader : MonoBehaviour
         if (once == false)
         {
             addScene2handler();
+
+            HideScenes();
             once = true;
         }
         IEnumerable<TrackableBehaviour> tbs = TrackerManager.Instance.GetStateManager().GetTrackableBehaviours();
@@ -282,21 +290,6 @@ public class DynamicDataSetLoader : MonoBehaviour
 
                 }
             }
-            //new code start
-            //if (i < RenderObjects.Count)
-            //{
-            //    GameObject g = RenderObjects[i];
-            //    Debug.Log("add!!!!" + g.ToString());
-            //    if (g.transform.parent == null)
-            //    {
-            //        Debug.Log("Set up BABA");
-            //        g.transform.parent = tb.gameObject.transform;
-            //        g.transform.localPosition = new Vector3(0f, 0f, 0f);
-            //    }
-            //    i++;
-            //}
-            //new code end
-            //GameObject arrowObject = (GameObject)GameObject.Instantiate(arrow);
 
 
         }
@@ -338,23 +331,23 @@ public class DynamicDataSetLoader : MonoBehaviour
     void OnGUI() {
         //NextSceneButton();
     }
-    void NextSceneButton() {
-        if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
-        {
-            SceneIndex += 1;
-            int numberScene = 2;//GameObject.Find("Poi_" + kvp.Key).transform.childCount;
-            SceneIndex = SceneIndex % numberScene;
-            unlinkScene();
-            linkScene();
-            //Debug.Log(SceneIndex);
-            //for(i = 0;i< GameObject.Find("Poi_Bentham").transform.childCount; i++)
-            //{
-            //    if(i!=SceneIndex)
-            //    GameObject.Find("Poi_Bentham").transform.GetChild(i).gameObject.SetActive(false);
-            //}
+    //void NextSceneButton() {
+    //    if (GUI.Button(new Rect(Screen.width * 0.8f, 2f / 8 * Screen.height, 0.2f * Screen.width, 0.1f * Screen.height), "Next Scene"))
+    //    {
+    //        SceneIndex += 1;
+    //        int numberScene = 2;//GameObject.Find("Poi_" + kvp.Key).transform.childCount;
+    //        SceneIndex = SceneIndex % numberScene;
+    //        unlinkScene();
+    //        linkScene();
+    //        //Debug.Log(SceneIndex);
+    //        //for(i = 0;i< GameObject.Find("Poi_Bentham").transform.childCount; i++)
+    //        //{
+    //        //    if(i!=SceneIndex)
+    //        //    GameObject.Find("Poi_Bentham").transform.GetChild(i).gameObject.SetActive(false);
+    //        //}
 
-        }
-    }
+    //    }
+    //}
 
 
 }
